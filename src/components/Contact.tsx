@@ -84,7 +84,7 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-2">Base</h4>
-                <p className="text-gray-900 font-medium">Merida, MX</p>
+                <p className="text-gray-900 font-medium">CDMX, MX</p>
                 <p className="text-gray-500 text-sm">Operaciones Globales</p>
               </div>
             </div>

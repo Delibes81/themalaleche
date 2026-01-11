@@ -1,4 +1,4 @@
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -41,25 +41,13 @@ export default function Footer() {
             </h4>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://instagram.com/themalaleche"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors"
-                aria-label="Github"
+                aria-label="Instagram"
               >
-                <Github className="w-5 h-5 text-gray-600" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5 text-gray-600" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5 text-gray-600" />
+                <Instagram className="w-5 h-5 text-gray-600" />
               </a>
             </div>
           </div>

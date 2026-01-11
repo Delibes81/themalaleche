@@ -37,7 +37,7 @@ export default function Solutions() {
           <div className="inline-flex items-center gap-3 mb-6">
             <div className="w-8 h-px bg-gray-300" />
             <span className="text-gray-600 text-xs tracking-[0.3em] uppercase font-light">
-              02 // La Cruda Realidad
+              02 // SIN PAUSTERIZAR
             </span>
             <div className="w-8 h-px bg-gray-300" />
           </div>

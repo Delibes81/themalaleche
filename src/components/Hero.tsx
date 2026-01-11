@@ -42,7 +42,7 @@ export default function Hero() {
             className="text-gray-600 text-base md:text-xl max-w-3xl mx-auto leading-relaxed font-light"
           >
             React, Supabase y 0% tonterías. Olvídate de las plantillas bonitas que no sirven.
-            Construimos máquinas de ventas, no adornos digitales.
+            Construimos sitios web digitales, no adornos digitales.
           </motion.p>
 
           <motion.div

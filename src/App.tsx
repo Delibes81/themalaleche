@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import SEO from './components/SEO';
 import AnimatedBackground from './components/AnimatedBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-x-hidden">
+      <SEO />
       <AnimatedBackground />
       <div className="relative z-10">
         <Navbar />

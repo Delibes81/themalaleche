@@ -17,7 +17,7 @@ export default function Hero() {
             transition={{ duration: 1, delay: 0.4 }}
             className="inline-block"
           >
-            <span className="text-gray-600 text-xs md:text-sm tracking-[0.3em] uppercase font-light border border-gray-300 px-4 py-2 rounded-full">
+            <span className="inline-block text-gray-600 text-[10px] sm:text-xs md:text-sm tracking-[0.15em] md:tracking-[0.3em] uppercase font-light border border-gray-300 px-3 py-2 md:px-4 rounded-full max-w-[90vw] break-words">
               Código Crudo. No apto para intolerantes.
             </span>
           </motion.div>
@@ -31,7 +31,7 @@ export default function Hero() {
             Tu web actual da pena.
             <br />
             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-600 bg-clip-text text-transparent">
-              Hagamos algo que venda.
+              Hagamos la web que tu marca se merece.
             </span>
           </motion.h1>
 
@@ -42,7 +42,7 @@ export default function Hero() {
             className="text-gray-600 text-base md:text-xl max-w-3xl mx-auto leading-relaxed font-light"
           >
             React, Supabase y 0% tonterías. Olvídate de las plantillas bonitas que no sirven.
-            Construimos sitios web digitales, no adornos digitales.
+            Construimos sitios web, no adornos digitales.
           </motion.p>
 
           <motion.div

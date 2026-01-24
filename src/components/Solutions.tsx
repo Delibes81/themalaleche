@@ -86,7 +86,7 @@ export default function Solutions() {
         >
           <div className="inline-block border border-gray-300 px-6 py-3">
             <p className="text-gray-600 text-sm font-light tracking-wider">
-              <span className="text-gray-900 font-medium">ARMAMENTO:</span> React · TypeScript · Supabase · Vite
+              <span className="text-gray-900 font-medium">ARMAMENTO:</span> React · TypeScript · Supabase · Vite · lactosa
             </p>
           </div>
         </motion.div>

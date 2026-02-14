@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 export default function Navbar() {
@@ -60,7 +60,9 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-4 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm' : 'py-6 bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? 'py-4 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm'
+        : 'py-4 md:py-6 bg-white/50 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-b border-gray-100 md:border-transparent'
         }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -71,7 +73,7 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <img src="/logo.png" alt="The Mala Leche Logo" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+            <img src="/logo.png" alt="The Mala Leche Logo" className="w-10 h-10 md:w-16 md:h-16 object-contain" />
             <span className={`font-bold text-lg md:text-xl tracking-wider uppercase transition-colors duration-300 ${isOpen ? 'text-gray-900' : 'text-gray-900'}`}>
               The Mala Leche
             </span>
@@ -109,20 +111,29 @@ export default function Navbar() {
             className="md:hidden relative z-50 p-2 text-gray-900 focus:outline-none"
             aria-label="Toggle menu"
           >
-            <div className="w-6 flex flex-col items-end gap-1.5">
-              <motion.span
-                animate={{ rotate: isOpen ? 45 : 0, y: isOpen ? 6 : 0 }}
-                className="w-full h-0.5 bg-gray-900 block transition-transform origin-center"
-              />
-              <motion.span
-                animate={{ opacity: isOpen ? 0 : 1 }}
-                className="w-3/4 h-0.5 bg-gray-900 block transition-opacity"
-              />
-              <motion.span
-                animate={{ rotate: isOpen ? -45 : 0, y: isOpen ? -6 : 0, width: isOpen ? '100%' : '50%' }}
-                className="w-1/2 h-0.5 bg-gray-900 block transition-all origin-center"
-              />
-            </div>
+            <AnimatePresence mode="wait">
+              {isOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X className="w-6 h-6" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="menu"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu className="w-6 h-6" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </button>
         </div>
       </div>
@@ -135,9 +146,9 @@ export default function Navbar() {
             animate="open"
             exit="closed"
             variants={menuVariants}
-            className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl md:hidden flex flex-col justify-center px-8"
+            className="fixed inset-0 z-40 bg-white md:hidden flex flex-col justify-center px-8 h-dvh"
           >
-            <div className="space-y-8">
+            <div className="space-y-8 mt-20">
               {navItems.map((item, i) => (
                 <div key={item} className="overflow-hidden">
                   <motion.a

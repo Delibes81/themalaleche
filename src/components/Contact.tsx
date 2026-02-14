@@ -76,10 +76,10 @@ export default function Contact() {
               Si quieres facturar y dejar de perder el tiempo, llena el formulario.
             </p>
 
-            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-gray-200">
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-2">Línea Roja</h4>
-                <p className="text-gray-900 font-medium">hola@themalaleche.com</p>
+                <p className="text-gray-900 font-medium break-words">hola@themalaleche.com</p>
                 <p className="text-gray-900 font-medium">+52 (55)5191-6061</p>
               </div>
               <div>

@@ -9,13 +9,13 @@ interface SEOProps {
 }
 
 export default function SEO({
-    title = "The Mala Leche | Web Studio",
-    description = "Desarrollo web premium con React y Supabase. Sin plantillas, solo código crudo. Sitios que venden.",
-    keywords = "desarrollo web, react, supabase, diseño web, agencia digital, the mala leche, web design, web development",
+    title = "The Mala Leche | Web Studio - Desarrollo Web Premium",
+    description = "Agencia de desarrollo web especializada en React y Supabase. Creamos sitios web rápidos, optimizados y sin plantillas. Código crudo para marcas que buscan rendimiento y exclusividad.",
+    keywords = "desarrollo web a medida, react, supabase, diseño web premium, optimización web, seo técnico, programación web, the mala leche, sitio web rápido, web studio mexico",
     image = "/og-image.jpg",
     url = "https://themalaleche.com"
 }: SEOProps) {
-    const siteTitle = title === "The Mala Leche | Web Studio" ? title : `${title} | The Mala Leche`;
+    const siteTitle = title === "The Mala Leche | Web Studio - Desarrollo Web Premium" ? title : `${title} | The Mala Leche`;
 
     return (
         <Helmet>
@@ -33,6 +33,7 @@ export default function SEO({
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
             <meta property="og:site_name" content="The Mala Leche" />
+            <meta property="og:locale" content="es_MX" />
 
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
@@ -46,18 +47,34 @@ export default function SEO({
             <script type="application/ld+json">
                 {JSON.stringify({
                     "@context": "https://schema.org",
-                    "@type": "WebSite",
-                    "name": "The Mala Leche",
+                    "@type": "ProfessionalService",
+                    "name": "The Mala Leche | Web Studio",
                     "url": url,
+                    "logo": "https://themalaleche.com/logo.png",
+                    "image": "https://themalaleche.com/og-image.jpg",
                     "description": description,
-                    "publisher": {
-                        "@type": "Organization",
-                        "name": "The Mala Leche",
-                        "logo": {
-                            "@type": "ImageObject",
-                            "url": "https://themalaleche.com/logo.png" // We might want to fix this later if we have a real URL
-                        }
-                    }
+                    "address": {
+                        "@type": "PostalAddress",
+                        "addressLocality": "Mexico",
+                        "addressCountry": "MX"
+                    },
+                    "priceRange": "$$$",
+                    "openingHoursSpecification": {
+                        "@type": "OpeningHoursSpecification",
+                        "dayOfWeek": [
+                            "Monday",
+                            "Tuesday",
+                            "Wednesday",
+                            "Thursday",
+                            "Friday"
+                        ],
+                        "opens": "09:00",
+                        "closes": "18:00"
+                    },
+                    "sameAs": [
+                        "https://www.instagram.com/themalaleche",
+                        "https://github.com/Delibes81"
+                    ]
                 })}
             </script>
         </Helmet>

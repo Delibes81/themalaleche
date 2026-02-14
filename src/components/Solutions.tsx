@@ -46,7 +46,7 @@ export default function Solutions() {
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
           {solutions.map((solution, index) => (
             <motion.div
               key={solution.title}
@@ -55,22 +55,24 @@ export default function Solutions() {
               transition={{ duration: 0.6, delay: index * 0.2 }}
               className="group relative"
             >
-              <div className="relative bg-gray-50 border border-gray-200 p-8 h-full hover:border-gray-300 transition-all duration-500">
-                <div className="absolute top-0 left-0 w-1 h-0 bg-gray-900 group-hover:h-full transition-all duration-500" />
+              <div className="relative bg-white/50 backdrop-blur-sm border border-gray-200 p-8 md:p-10 h-full hover:border-gray-900 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                <div className="absolute top-0 left-0 w-0 h-1 bg-gray-900 group-hover:w-full transition-all duration-500 ease-out" />
 
-                <div className="mb-6">
-                  <solution.icon className="w-10 h-10 text-gray-700 stroke-[1.5]" />
+                <div className="mb-8">
+                  <div className="w-12 h-12 bg-gray-100 flex items-center justify-center rounded-none mb-4 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-500">
+                    <solution.icon className="w-6 h-6 stroke-[1.5]" />
+                  </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-4 uppercase tracking-wide">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 uppercase tracking-tight">
                   {solution.title}
                 </h3>
 
-                <p className="text-gray-600 leading-relaxed font-light">
+                <p className="text-gray-600 leading-relaxed font-light text-sm md:text-base">
                   {solution.description}
                 </p>
 
-                <div className="absolute top-8 right-8 text-6xl font-bold text-gray-200 group-hover:text-gray-300 transition-all duration-500">
+                <div className="absolute bottom-8 right-8 text-4xl md:text-6xl font-bold text-gray-100 group-hover:text-gray-200/50 transition-all duration-500 select-none z-0">
                   0{index + 1}
                 </div>
               </div>

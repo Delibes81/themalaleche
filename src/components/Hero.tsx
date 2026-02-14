@@ -26,37 +26,36 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 leading-[0.9] tracking-tight mb-6"
           >
-            Tu web actual da pena.
+            Tu web actual
             <br />
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-600 bg-clip-text text-transparent">
-              Hagamos la web que tu marca se merece.
-            </span>
+            <span className="text-gray-400">da pena.</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="text-gray-600 text-base md:text-xl max-w-3xl mx-auto leading-relaxed font-light"
+            className="text-gray-600 text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed font-light mb-10 text-balance"
           >
-            React, Supabase y 0% tonterías. Olvídate de las plantillas bonitas que no sirven.
-            Construimos sitios web, no adornos digitales.
+            Hagamos la web que tu marca se merece.
+            <br className="hidden md:block" />
+            <span className="font-medium text-gray-900">React, Supabase y 0% tonterías.</span>
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="pt-8"
+            className="flex flex-col md:flex-row items-center justify-center gap-4 pt-4"
           >
             <a
               href="#contacto"
-              className="group inline-flex items-center gap-3 bg-gray-900 text-white px-8 py-4 rounded-none font-medium tracking-wide uppercase text-sm hover:bg-gray-800 transition-all duration-300 border border-gray-900"
+              className="w-full md:w-auto group inline-flex items-center justify-center gap-3 bg-gray-900 text-white px-8 py-4 text-sm tracking-widest uppercase hover:bg-gray-800 transition-all duration-300"
             >
               Dame la dura verdad
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
           </motion.div>
         </motion.div>
@@ -65,7 +64,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block"
         >
           <div className="flex flex-col items-center gap-2">
             <span className="text-gray-500 text-xs tracking-widest uppercase">Scroll</span>

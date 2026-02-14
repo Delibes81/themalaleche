@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    @apply antialiased text-gray-900 bg-white;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    @apply bg-gray-900 text-white;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+}

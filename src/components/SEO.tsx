@@ -11,8 +11,8 @@ interface SEOProps {
 export default function SEO({
     title = "The Mala Leche | Web Studio - Desarrollo Web Premium",
     description = "Agencia de desarrollo web especializada en React y Supabase. Creamos sitios web rápidos, optimizados y sin plantillas. Código crudo para marcas que buscan rendimiento y exclusividad.",
-    keywords = "desarrollo web a medida, react, supabase, diseño web premium, optimización web, seo técnico, programación web, the mala leche, sitio web rápido, web studio mexico",
-    image = "/og-image.jpg",
+    keywords = "paginas web, diseño web, desarrollo web a medida, react, supabase, diseño web premium, optimización web, seo técnico, programación web, the mala leche, sitio web rápido, web studio mexico, agencia de diseño web, creacion de sitios web",
+    image = "https://themalaleche.com/og-image.jpg",
     url = "https://themalaleche.com"
 }: SEOProps) {
     const siteTitle = title === "The Mala Leche | Web Studio - Desarrollo Web Premium" ? title : `${title} | The Mala Leche`;

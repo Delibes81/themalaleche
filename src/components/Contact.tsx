@@ -80,7 +80,7 @@ export default function Contact() {
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-2">Línea Roja</h4>
                 <p className="text-gray-900 font-medium break-words">hola@themalaleche.com</p>
-                <p className="text-gray-900 font-medium">+52 (55)5191-6061</p>
+                <p className="text-gray-900 font-medium">+52 (56) 3874 4708</p>
               </div>
               <div>
                 <h4 className="text-xs uppercase tracking-widest text-gray-400 mb-2">Base</h4>

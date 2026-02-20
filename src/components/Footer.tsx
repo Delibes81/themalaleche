@@ -44,7 +44,7 @@ export default function Footer() {
                 href="https://instagram.com/themalaleche"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 border border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors"
+                className="w-10 h-10 flex items-center justify-center transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5 text-gray-600" />

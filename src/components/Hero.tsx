@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import MagneticButton from './MagneticButton';
 
 export default function Hero() {
   return (
@@ -23,14 +24,38 @@ export default function Hero() {
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.1, delayChildren: 0.6 } }
+            }}
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 leading-[0.9] tracking-tight mb-6"
           >
-            Tu web actual
+            {"Tu web actual ".split(" ").map((word, i) => (
+              <motion.span
+                key={`word-1-${i}`}
+                className="inline-block"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { type: "spring", damping: 12, stiffness: 100 } }
+                }}
+              >
+                {word}&nbsp;
+              </motion.span>
+            ))}
             <br />
-            <span className="text-gray-400">da pena.</span>
+            {"da pena.".split(" ").map((word, i) => (
+              <motion.span
+                key={`word-2-${i}`}
+                className="inline-block text-gray-400"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { type: "spring", damping: 12, stiffness: 100 } }
+                }}
+              >
+                {word}&nbsp;
+              </motion.span>
+            ))}
           </motion.h1>
 
           <motion.p
@@ -50,13 +75,13 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 1 }}
             className="flex flex-col md:flex-row items-center justify-center gap-4 pt-4"
           >
-            <a
+            <MagneticButton
               href="#contacto"
               className="w-full md:w-auto group inline-flex items-center justify-center gap-3 bg-gray-900 text-white px-8 py-4 text-sm tracking-widest uppercase hover:bg-gray-800 transition-all duration-300"
             >
               Dame la dura verdad
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
+            </MagneticButton>
           </motion.div>
         </motion.div>
 

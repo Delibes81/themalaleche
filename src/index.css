@@ -7,7 +7,7 @@
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   body {
     @apply antialiased text-gray-900 bg-white;
     overflow-x: hidden;
@@ -22,7 +22,7 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .glass-panel {
     @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
   }

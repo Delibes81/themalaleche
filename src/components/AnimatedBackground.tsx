@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 interface Particle {
   x: number;
@@ -6,6 +7,8 @@ interface Particle {
   vx: number;
   vy: number;
   size: number;
+  update: () => void;
+  draw: () => void;
 }
 
 export default function AnimatedBackground() {
@@ -29,7 +32,7 @@ export default function AnimatedBackground() {
 
     const resize = () => {
       width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      height = canvas.height = window.innerHeight * 1.5;
     };
 
     class ParticleClass {
@@ -56,6 +59,7 @@ export default function AnimatedBackground() {
       }
 
       draw() {
+        if (!ctx) return;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
@@ -108,11 +112,14 @@ export default function AnimatedBackground() {
     };
   }, []);
 
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', '-20%']);
+
   return (
-    <canvas
+    <motion.canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ background: 'transparent' }}
+      className="fixed top-0 left-0 w-full h-[150vh] pointer-events-none z-0"
+      style={{ background: 'transparent', y }}
     />
   );
 }

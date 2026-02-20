@@ -55,25 +55,27 @@ export default function Solutions() {
               transition={{ duration: 0.6, delay: index * 0.2 }}
               className="group relative"
             >
-              <div className="relative bg-white/50 backdrop-blur-sm border border-gray-200 p-8 md:p-10 h-full hover:border-gray-900 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                <div className="absolute top-0 left-0 w-0 h-1 bg-gray-900 group-hover:w-full transition-all duration-500 ease-out" />
+              <div className="relative overflow-hidden bg-white/50 backdrop-blur-sm border border-gray-200 p-8 md:p-10 h-full hover:border-gray-900 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                <div className="absolute top-0 left-0 w-0 h-1 bg-gray-900 group-hover:w-full transition-all duration-500 ease-out z-20" />
 
-                <div className="mb-8">
-                  <div className="w-12 h-12 bg-gray-100 flex items-center justify-center rounded-none mb-4 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-500">
-                    <solution.icon className="w-6 h-6 stroke-[1.5]" />
-                  </div>
+                <div className="absolute -bottom-8 -right-4 text-8xl md:text-9xl font-black text-gray-50 group-hover:text-gray-100 transition-all duration-500 select-none z-0">
+                  0{index + 1}
                 </div>
 
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 uppercase tracking-tight">
-                  {solution.title}
-                </h3>
+                <div className="relative z-10">
+                  <div className="mb-8">
+                    <div className="w-12 h-12 bg-gray-100 flex items-center justify-center rounded-none mb-4 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-500">
+                      <solution.icon className="w-6 h-6 stroke-[1.5]" />
+                    </div>
+                  </div>
 
-                <p className="text-gray-600 leading-relaxed font-light text-sm md:text-base">
-                  {solution.description}
-                </p>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 uppercase tracking-tight">
+                    {solution.title}
+                  </h3>
 
-                <div className="absolute bottom-8 right-8 text-4xl md:text-6xl font-bold text-gray-100 group-hover:text-gray-200/50 transition-all duration-500 select-none z-0">
-                  0{index + 1}
+                  <p className="text-gray-600 leading-relaxed font-light text-sm md:text-base">
+                    {solution.description}
+                  </p>
                 </div>
               </div>
             </motion.div>

@@ -3,12 +3,12 @@ import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 
-const InputField = ({ label, name, type = 'text', value, onChange }: any) => {
+const InputField = ({ label, name, type = 'text', value, onChange, error }: any) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <div className="relative group">
-      <label className={`absolute left-0 transition-all duration-300 ${isFocused || value ? '-top-6 text-xs text-gray-900' : 'top-0 text-lg text-gray-500 font-light'}`}>
+      <label className={`absolute left-0 transition-all duration-300 ${isFocused || value ? '-top-6 text-xs ' + (error ? 'text-red-500' : 'text-gray-900') : 'top-0 text-lg ' + (error ? 'text-red-400' : 'text-gray-500') + ' font-light'}`}>
         {label}
       </label>
       <input
@@ -18,9 +18,10 @@ const InputField = ({ label, name, type = 'text', value, onChange }: any) => {
         onChange={onChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className="w-full bg-transparent border-b border-gray-300 py-2 text-gray-900 focus:outline-none focus:border-gray-900 transition-colors duration-300"
+        className={`w-full bg-transparent border-b py-2 text-gray-900 focus:outline-none transition-colors duration-300 ${error ? 'border-red-500 focus:border-red-600' : 'border-gray-300 focus:border-gray-900'}`}
       />
-      <div className={`absolute bottom-0 left-0 h-px bg-gray-900 transition-all duration-500 ${isFocused ? 'w-full' : 'w-0'}`} />
+      <div className={`absolute bottom-0 left-0 h-px transition-all duration-500 ${isFocused ? 'w-full' : 'w-0'} ${error ? 'bg-red-500' : 'bg-gray-900'}`} />
+      {error && <span className="absolute -bottom-5 left-0 text-xs text-red-500 font-medium">{error}</span>}
     </div>
   );
 };
@@ -34,10 +35,30 @@ export default function Contact() {
     project: '',
     message: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = "Pon tu nombre, no somos adivinos.";
+    if (!formData.email.trim()) {
+      newErrors.email = "Necesitamos un correo. ¿O prefieres telepatía?";
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = "Ese correo parece inventado. Escribe uno real.";
+    }
+    if (!formData.message.trim()) newErrors.message = "Si no tienes nada que decir, mejor cierra la pestaña.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    if (validateForm()) {
+      console.log('Form submitted:', formData);
+      alert("Enviado. Ya veremos si te respondemos.");
+      setFormData({ name: '', email: '', project: '', message: '' });
+      setErrors({});
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -101,17 +122,19 @@ export default function Contact() {
           <form onSubmit={handleSubmit} className="space-y-12">
             <div className="space-y-12">
               <InputField
-                label="Nombre / Organización"
+                label="Nombre / Organización *"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                error={errors.name}
               />
               <InputField
-                label="Correo Electrónico"
+                label="Correo Electrónico *"
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
+                error={errors.email}
               />
               <InputField
                 label="Tipo de Proyecto"
@@ -121,18 +144,19 @@ export default function Contact() {
               />
 
               <div className="relative group">
-                <label className={`absolute left-0 transition-all duration-300 ${formData.message ? '-top-6 text-xs text-gray-900' : 'top-0 text-lg text-gray-500 font-light'}`}>
-                  Detalles de la Misión
+                <label className={`absolute left-0 transition-all duration-300 ${(formData.message || errors.message) ? '-top-6 text-xs ' + (errors.message ? 'text-red-500' : 'text-gray-900') : 'top-0 text-lg ' + (errors.message ? 'text-red-400' : 'text-gray-500') + ' font-light'}`}>
+                  Detalles de la Misión *
                 </label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   rows={1}
-                  className="w-full bg-transparent border-b border-gray-300 py-2 text-gray-900 focus:outline-none focus:border-gray-900 transition-colors duration-300 resize-none min-h-[40px]"
+                  className={`w-full bg-transparent border-b py-2 text-gray-900 focus:outline-none transition-colors duration-300 resize-none min-h-[40px] ${errors.message ? 'border-red-500 focus:border-red-600' : 'border-gray-300 focus:border-gray-900'}`}
                   onFocus={(e) => e.target.rows = 4}
                   onBlur={(e) => !e.target.value && (e.target.rows = 1)}
                 />
+                {errors.message && <span className="absolute -bottom-5 left-0 text-xs text-red-500 font-medium">{errors.message}</span>}
               </div>
             </div>
 

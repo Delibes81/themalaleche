@@ -89,9 +89,9 @@ export default function Solutions() {
           className="mt-20 text-center"
         >
           <div className="inline-block border border-gray-300 px-6 py-3">
-            <p className="text-gray-600 text-sm font-light tracking-wider">
+            <h3 className="text-gray-600 text-sm font-light tracking-wider">
               <span className="text-gray-900 font-medium">ARMAMENTO:</span> React · TypeScript · Supabase · Vite · lactosa
-            </p>
+            </h3>
           </div>
         </motion.div>
       </div>

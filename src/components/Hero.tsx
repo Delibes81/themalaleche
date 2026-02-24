@@ -31,7 +31,7 @@ export default function Hero() {
             }}
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 leading-[0.9] tracking-tight mb-6"
           >
-            {"Tu web actual ".split(" ").map((word, i) => (
+            {"The Mala Leche: ".split(" ").map((word, i) => (
               <motion.span
                 key={`word-1-${i}`}
                 className="inline-block"
@@ -44,7 +44,7 @@ export default function Hero() {
               </motion.span>
             ))}
             <br />
-            {"da pena.".split(" ").map((word, i) => (
+            {"Expertos en Desarrollo Web".split(" ").map((word, i) => (
               <motion.span
                 key={`word-2-${i}`}
                 className="inline-block text-gray-400"

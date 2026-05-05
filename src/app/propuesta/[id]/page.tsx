@@ -509,7 +509,7 @@ export default function Proposal() {
       {selectedMockup && (
         <div className="lightbox-overlay" onClick={() => setSelectedMockup(null)}>
           <div className="lightbox-close">×</div>
-          <img src={selectedMockup} alt="Mockup Ampliado" className="lightbox-img" onClick={(e) => e.stopPropagation()} />
+          <img src={selectedMockup} alt="Mockup Ampliado" className="lightbox-img" />
         </div>
       )}
     </div>

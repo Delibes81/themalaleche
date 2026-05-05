@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import WhatsAppButton from '../components/WhatsAppButton';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
+import WhatsAppButton from '../../components/WhatsAppButton';
 export default function Terms() {
     return (
         <motion.div

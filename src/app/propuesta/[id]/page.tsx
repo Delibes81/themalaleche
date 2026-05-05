@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
 import { ProposalData } from '../../../types/proposal';
-import './Proposal.css';
 
 export default function Proposal() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

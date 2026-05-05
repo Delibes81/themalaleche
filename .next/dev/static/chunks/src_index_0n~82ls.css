@@ -394,6 +394,10 @@ body {
   top: .5rem;
 }
 
+.right-3 {
+  right: .75rem;
+}
+
 .z-0 {
   z-index: 0;
 }
@@ -1200,6 +1204,10 @@ body {
   padding-top: 2rem;
 }
 
+.pr-8 {
+  padding-right: 2rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -1747,6 +1755,10 @@ body {
 
   .md\:w-auto {
     width: auto;
+  }
+
+  .md\:w-48 {
+    width: 12rem;
   }
 
   .md\:grid-cols-2 {

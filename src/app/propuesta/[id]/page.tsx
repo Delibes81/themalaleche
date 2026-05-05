@@ -241,7 +241,6 @@ export default function Proposal() {
         <div className="grid">
           {data.modules.map((mod) => (
             <div className="card" key={mod.id}>
-              <span className="price-tag"></span>
               <h3>{mod.title}</h3>
               <ul>
                 {mod.features.map((feat, idx) => (
@@ -252,57 +251,7 @@ export default function Proposal() {
           ))}
         </div>
 
-        <h2>03 // DESGLOSE DE INVERSIÓN INICIAL</h2>
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Módulo</th>
-                <th>Costo (MXN)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.modules.map(mod => (
-                <tr key={mod.id}>
-                  <td><strong style={{textTransform: 'uppercase'}}>{mod.title}</strong></td>
-                  <td>${mod.cost.toLocaleString()}</td>
-                </tr>
-              ))}
-              <tr className="total-row">
-                <td>INVERSIÓN INICIAL TOTAL</td>
-                <td>${data.budget.toLocaleString()}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {data.recurringCosts && data.recurringCosts.length > 0 && (
-          <>
-            <h2>04 // GASTOS RECURRENTES (SERVICIOS)</h2>
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Servicio</th>
-                    <th>Costo (MXN)</th>
-                    <th>Periodicidad</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.recurringCosts.map(rc => (
-                    <tr key={rc.id}>
-                      <td><strong style={{textTransform: 'uppercase'}}>{rc.name}</strong></td>
-                      <td>${rc.cost.toLocaleString()}</td>
-                      <td style={{textTransform: 'uppercase'}}>{rc.period}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-
-        <h2>{data.recurringCosts && data.recurringCosts.length > 0 ? '05' : '04'} // CRONOGRAMA DE EJECUCIÓN</h2>
+        <h2>03 // CRONOGRAMA DE EJECUCIÓN</h2>
         <div className="timeline-container">
           <div className="timeline-line"></div>
           <div className="timeline-steps">
@@ -317,7 +266,7 @@ export default function Proposal() {
 
         {data.mockups && data.mockups.length > 0 && (
           <>
-            <h2>{data.recurringCosts && data.recurringCosts.length > 0 ? '06' : '05'} // MOCKUPS & REFERENCIAS</h2>
+            <h2>04 // MOCKUPS & REFERENCIAS</h2>
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
               {data.mockups.map((url, idx) => (
                 <div key={idx} className="card" style={{ padding: '10px' }}>
@@ -328,6 +277,119 @@ export default function Proposal() {
                   />
                 </div>
               ))}
+            </div>
+          </>
+        )}
+
+        <h2>{data.mockups && data.mockups.length > 0 ? '05' : '04'} // DESGLOSE DE INVERSIÓN INICIAL</h2>
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Módulo</th>
+                <th style={{ textAlign: 'right' }}>Costo (MXN)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.modules.map(mod => (
+                <tr key={mod.id}>
+                  <td><strong style={{textTransform: 'uppercase'}}>{mod.title}</strong></td>
+                  <td style={{ textAlign: 'right' }}>${mod.cost.toLocaleString()}</td>
+                </tr>
+              ))}
+              <tr className="total-row">
+                <td>INVERSIÓN INICIAL TOTAL</td>
+                <td style={{ textAlign: 'right' }}>${data.budget.toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {data.recurringCosts && data.recurringCosts.length > 0 && (
+          <>
+            <h2>{data.mockups && data.mockups.length > 0 ? '06' : '05'} // GASTOS RECURRENTES (SERVICIOS)</h2>
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Servicio</th>
+                    <th>Periodicidad</th>
+                    <th style={{ textAlign: 'right' }}>Costo (MXN)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recurringCosts.map(rc => (
+                    <tr key={rc.id}>
+                      <td><strong style={{textTransform: 'uppercase'}}>{rc.name}</strong></td>
+                      <td style={{textTransform: 'uppercase'}}>{rc.period}</td>
+                      <td style={{ textAlign: 'right' }}>${rc.cost.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {/* Planes de Pago */}
+        {data.paymentPlans && data.paymentPlans.length > 0 ? (
+          <>
+            <h2>
+              {data.recurringCosts && data.recurringCosts.length > 0 
+                ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
+                : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // OPCIONES DE FINANCIAMIENTO
+            </h2>
+            <div className="payment-plans-grid">
+              {data.paymentPlans.map((pp, idx) => {
+                const enganche = data.budget * (pp.downPaymentPercentage / 100);
+                const restante = data.budget - enganche;
+                const mensualidad = pp.months > 0 ? restante / pp.months : 0;
+                
+                return (
+                  <div className="payment-card" key={pp.id}>
+                    <div className="payment-header">
+                      <h3>Opción 0{idx + 1}</h3>
+                      <span className="payment-badge">{pp.months} Meses</span>
+                    </div>
+                    <div className="payment-body">
+                      <div className="payment-row">
+                        <span>Anticipo ({pp.downPaymentPercentage}%)</span>
+                        <strong>${enganche.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
+                      </div>
+                      <div className="payment-row highlight">
+                        <span>{pp.months} Mensualidades de</span>
+                        <strong>${mensualidad.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
+                      </div>
+                    </div>
+                    <div className="payment-footer">
+                      <span>Inversión Total:</span>
+                      <strong>${data.budget.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>
+              {data.recurringCosts && data.recurringCosts.length > 0 
+                ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
+                : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // FINANCIAMIENTO
+            </h2>
+            <div className="payment-plans-grid">
+              <div className="payment-card">
+                <div className="payment-header">
+                  <h3>Pago de Contado</h3>
+                  <span className="payment-badge">1 Exhibición</span>
+                </div>
+                <div className="payment-body">
+                  <div className="payment-row highlight" style={{ borderBottom: 'none' }}>
+                    <span>Anticipo (100%)</span>
+                    <strong>${data.budget.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
+                  </div>
+                </div>
+              </div>
             </div>
           </>
         )}

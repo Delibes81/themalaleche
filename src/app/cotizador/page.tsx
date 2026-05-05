@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
-import { ProposalModule, ProposalStep, RecurringCost } from '../../types/proposal';
+import { ProposalModule, ProposalStep, RecurringCost, PaymentPlan } from '../../types/proposal';
 import { Session } from '@supabase/supabase-js';
 
 const AVAILABLE_FONTS = [
@@ -46,6 +46,7 @@ export default function Cotizador() {
   ]);
 
   const [recurringCosts, setRecurringCosts] = useState<RecurringCost[]>([]);
+  const [paymentPlans, setPaymentPlans] = useState<PaymentPlan[]>([]);
 
   const [steps, setSteps] = useState<ProposalStep[]>([
     { id: '1', label: 'Diseño & DB' },
@@ -118,6 +119,7 @@ export default function Cotizador() {
     setMockupUrls('');
     setModules([{ id: Date.now().toString(), title: 'Frontend Core', features: ['UX/UI Reactivo'], cost: 5000 }]);
     setRecurringCosts([]);
+    setPaymentPlans([]);
     setSteps([
       { id: '1', label: 'Diseño & DB' },
       { id: '2', label: 'Admin Panel' },
@@ -138,6 +140,7 @@ export default function Cotizador() {
     setStatus(p.status || 'PENDIENTE');
     setModules(p.modules || []);
     setRecurringCosts(p.recurring_costs || []);
+    setPaymentPlans(p.payment_plans || []);
     setSteps(p.steps || []);
     
     if (p.mockups && p.mockups.length > 0) {
@@ -182,6 +185,7 @@ export default function Cotizador() {
       modules,
       steps,
       recurring_costs: recurringCosts,
+      payment_plans: paymentPlans,
       mockups: mockupsArray,
       client_logo_type: clientLogoType,
       client_logo_value: clientLogoValue || clientName,
@@ -252,6 +256,17 @@ export default function Cotizador() {
   };
   const removeRecurringCost = (id: string) => {
     setRecurringCosts(recurringCosts.filter(rc => rc.id !== id));
+  };
+
+  // Payment Plans Helpers
+  const addPaymentPlan = () => {
+    setPaymentPlans([...paymentPlans, { id: Date.now().toString(), months: 3, downPaymentPercentage: 50 }]);
+  };
+  const updatePaymentPlan = (id: string, field: keyof PaymentPlan, value: any) => {
+    setPaymentPlans(paymentPlans.map(pp => pp.id === id ? { ...pp, [field]: value } : pp));
+  };
+  const removePaymentPlan = (id: string) => {
+    setPaymentPlans(paymentPlans.filter(pp => pp.id !== id));
   };
 
   // Step Helpers
@@ -517,6 +532,48 @@ export default function Cotizador() {
                           <option value="Mensual">Mensual</option>
                           <option value="Anual">Anual</option>
                         </select>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Payment Plans */}
+            <section className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Planes de Pago</h3>
+                <button onClick={addPaymentPlan} className="px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-800">+ Plan de Pago</button>
+              </div>
+              {paymentPlans.length === 0 ? (
+                <p className="text-sm text-gray-500 italic">No se han agregado opciones de pago. El cliente verá la opción de pago de contado por defecto.</p>
+              ) : (
+                <div className="space-y-3">
+                  {paymentPlans.map((pp) => (
+                    <div key={pp.id} className="flex flex-col md:flex-row gap-3 bg-white p-3 rounded border items-end relative">
+                      <button onClick={() => removePaymentPlan(pp.id)} className="absolute top-1 right-1 text-red-500 text-xs font-bold md:static md:mb-2">✕</button>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Plazo (Meses)</label>
+                        <select value={pp.months} onChange={(e) => updatePaymentPlan(pp.id, 'months', Number(e.target.value))} className="w-full p-2 border rounded text-sm font-medium">
+                          <option value={1}>1 Mes</option>
+                          <option value={3}>3 Meses</option>
+                          <option value={6}>6 Meses</option>
+                          <option value={9}>9 Meses</option>
+                          <option value={12}>12 Meses</option>
+                          <option value={18}>18 Meses</option>
+                          <option value={24}>24 Meses</option>
+                        </select>
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Enganche (%)</label>
+                        <div className="relative">
+                          <input type="number" min="0" max="100" value={pp.downPaymentPercentage} onChange={(e) => updatePaymentPlan(pp.id, 'downPaymentPercentage', Number(e.target.value))} className="w-full p-2 border rounded text-sm pr-8" />
+                          <span className="absolute right-3 top-2 text-gray-400 font-bold">%</span>
+                        </div>
+                      </div>
+                      <div className="w-full md:w-48 text-right bg-gray-50 p-2 rounded border border-gray-100 flex flex-col justify-center">
+                         <span className="text-xs text-gray-500">Anticipo: ${(totalBudget * (pp.downPaymentPercentage / 100)).toLocaleString()}</span>
+                         <span className="text-sm font-bold text-gray-800">{pp.months} pagos de ${((totalBudget * (1 - (pp.downPaymentPercentage / 100))) / Math.max(1, pp.months)).toLocaleString()}</span>
                       </div>
                     </div>
                   ))}

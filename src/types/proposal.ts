@@ -17,6 +17,12 @@ export interface RecurringCost {
   period: string;
 }
 
+export interface PaymentPlan {
+  id: string;
+  months: number;
+  downPaymentPercentage: number;
+}
+
 export interface ProposalData {
   id: string; // From Supabase
   clientName: string;
@@ -30,6 +36,7 @@ export interface ProposalData {
   steps: ProposalStep[];
   mockups?: string[];
   recurringCosts?: RecurringCost[];
+  paymentPlans?: PaymentPlan[];
   clientLogoType: 'text' | 'image';
   clientLogoValue: string;
   clientLogoFont?: string;

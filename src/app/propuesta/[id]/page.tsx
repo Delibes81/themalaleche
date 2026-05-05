@@ -217,10 +217,6 @@ export default function Proposal() {
 
         <div className="system-status">
           <div className="status-item">
-            <span className="status-label">Presupuesto</span>
-            <span className="status-value">${data.budget.toLocaleString()} MXN</span>
-          </div>
-          <div className="status-item">
             <span className="status-label">Tiempo Est.</span>
             <span className="status-value" style={{textTransform: 'uppercase'}}>{data.timeEstimate}</span>
           </div>
@@ -337,37 +333,38 @@ export default function Proposal() {
             <h2>
               {data.recurringCosts && data.recurringCosts.length > 0 
                 ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
-                : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // OPCIONES DE FINANCIAMIENTO
+                : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // ESTRUCTURA DE PAGOS
             </h2>
-            <div className="payment-plans-grid">
-              {data.paymentPlans.map((pp, idx) => {
-                const enganche = data.budget * (pp.downPaymentPercentage / 100);
-                const restante = data.budget - enganche;
-                const mensualidad = pp.months > 0 ? restante / pp.months : 0;
-                
-                return (
-                  <div className="payment-card" key={pp.id}>
-                    <div className="payment-header">
-                      <h3>Opción 0{idx + 1}</h3>
-                      <span className="payment-badge">{pp.months} Meses</span>
-                    </div>
-                    <div className="payment-body">
-                      <div className="payment-row">
-                        <span>Anticipo ({pp.downPaymentPercentage}%)</span>
-                        <strong>${enganche.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
-                      </div>
-                      <div className="payment-row highlight">
-                        <span>{pp.months} Mensualidades de</span>
-                        <strong>${mensualidad.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
-                      </div>
-                    </div>
-                    <div className="payment-footer">
-                      <span>Inversión Total:</span>
-                      <strong>${data.budget.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="table-container payment-table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Pago</th>
+                    <th>Porcentaje</th>
+                    <th>Monto (MXN)</th>
+                    <th>Hito de Activación / Entrega</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.paymentPlans.map((pp) => {
+                    const amount = data.budget * (pp.percentage / 100);
+                    return (
+                      <tr key={pp.id}>
+                        <td style={{ verticalAlign: 'top' }}>
+                          <strong style={{ fontSize: '1.05rem', color: '#000' }}>{pp.name}</strong>
+                        </td>
+                        <td style={{ verticalAlign: 'top' }}>{pp.percentage}%</td>
+                        <td style={{ verticalAlign: 'top' }}>
+                          <strong style={{ color: '#000' }}>${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                        </td>
+                        <td style={{ verticalAlign: 'top', color: '#555', lineHeight: '1.5' }}>
+                          {pp.condition}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </>
         ) : (
@@ -375,21 +372,33 @@ export default function Proposal() {
             <h2>
               {data.recurringCosts && data.recurringCosts.length > 0 
                 ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
-                : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // FINANCIAMIENTO
+                : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // ESTRUCTURA DE PAGOS
             </h2>
-            <div className="payment-plans-grid">
-              <div className="payment-card">
-                <div className="payment-header">
-                  <h3>Pago de Contado</h3>
-                  <span className="payment-badge">1 Exhibición</span>
-                </div>
-                <div className="payment-body">
-                  <div className="payment-row highlight" style={{ borderBottom: 'none' }}>
-                    <span>Anticipo (100%)</span>
-                    <strong>${data.budget.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
-                  </div>
-                </div>
-              </div>
+            <div className="table-container payment-table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Pago</th>
+                    <th>Porcentaje</th>
+                    <th>Monto (MXN)</th>
+                    <th>Hito de Activación / Entrega</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ verticalAlign: 'top' }}>
+                      <strong style={{ fontSize: '1.05rem', color: '#000' }}>Pago Único</strong>
+                    </td>
+                    <td style={{ verticalAlign: 'top' }}>100%</td>
+                    <td style={{ verticalAlign: 'top' }}>
+                      <strong style={{ color: '#000' }}>${data.budget.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                    </td>
+                    <td style={{ verticalAlign: 'top', color: '#555', lineHeight: '1.5' }}>
+                      Pago de contado en 1 exhibición.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </>
         )}

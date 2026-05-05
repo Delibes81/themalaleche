@@ -260,7 +260,7 @@ export default function Cotizador() {
 
   // Payment Plans Helpers
   const addPaymentPlan = () => {
-    setPaymentPlans([...paymentPlans, { id: Date.now().toString(), months: 3, downPaymentPercentage: 50 }]);
+    setPaymentPlans([...paymentPlans, { id: Date.now().toString(), name: 'Anticipo', percentage: 50, condition: 'Firma de contrato' }]);
   };
   const updatePaymentPlan = (id: string, field: keyof PaymentPlan, value: any) => {
     setPaymentPlans(paymentPlans.map(pp => pp.id === id ? { ...pp, [field]: value } : pp));
@@ -539,44 +539,67 @@ export default function Cotizador() {
               )}
             </section>
 
-            {/* Payment Plans */}
+            {/* Payment Plans (Hitos de Pago) */}
             <section className="bg-gray-50 p-6 rounded-lg border border-gray-200">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Planes de Pago</h3>
-                <button onClick={addPaymentPlan} className="px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-800">+ Plan de Pago</button>
+                <h3 className="text-lg font-semibold text-gray-800">Estructura de Pagos (Hitos)</h3>
+                <button onClick={addPaymentPlan} className="px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-800">+ Hito de Pago</button>
               </div>
               {paymentPlans.length === 0 ? (
-                <p className="text-sm text-gray-500 italic">No se han agregado opciones de pago. El cliente verá la opción de pago de contado por defecto.</p>
+                <p className="text-sm text-gray-500 italic">No se han agregado hitos de pago. Se mostrará el monto total por defecto.</p>
               ) : (
                 <div className="space-y-3">
                   {paymentPlans.map((pp) => (
-                    <div key={pp.id} className="flex flex-col md:flex-row gap-3 bg-white p-3 rounded border items-end relative">
-                      <button onClick={() => removePaymentPlan(pp.id)} className="absolute top-1 right-1 text-red-500 text-xs font-bold md:static md:mb-2">✕</button>
-                      <div className="flex-1">
-                        <label className="block text-xs text-gray-500 mb-1">Plazo (Meses)</label>
-                        <select value={pp.months} onChange={(e) => updatePaymentPlan(pp.id, 'months', Number(e.target.value))} className="w-full p-2 border rounded text-sm font-medium">
-                          <option value={1}>1 Mes</option>
-                          <option value={3}>3 Meses</option>
-                          <option value={6}>6 Meses</option>
-                          <option value={9}>9 Meses</option>
-                          <option value={12}>12 Meses</option>
-                          <option value={18}>18 Meses</option>
-                          <option value={24}>24 Meses</option>
-                        </select>
+                    <div key={pp.id} className="flex flex-col md:flex-row gap-3 bg-white p-3 rounded border relative">
+                      <button onClick={() => removePaymentPlan(pp.id)} className="absolute top-1 right-1 text-red-500 text-xs font-bold md:static md:mb-2 md:mt-2">✕</button>
+                      
+                      <div className="w-full md:w-1/4">
+                        <label className="block text-xs text-gray-500 mb-1">Nombre del Pago</label>
+                        <input 
+                          type="text" 
+                          value={pp.name} 
+                          onChange={(e) => updatePaymentPlan(pp.id, 'name', e.target.value)} 
+                          className="w-full p-2 border rounded text-sm font-medium" 
+                          placeholder="Ej. Anticipo" 
+                        />
                       </div>
-                      <div className="flex-1">
-                        <label className="block text-xs text-gray-500 mb-1">Enganche (%)</label>
-                        <div className="relative">
-                          <input type="number" min="0" max="100" value={pp.downPaymentPercentage} onChange={(e) => updatePaymentPlan(pp.id, 'downPaymentPercentage', Number(e.target.value))} className="w-full p-2 border rounded text-sm pr-8" />
-                          <span className="absolute right-3 top-2 text-gray-400 font-bold">%</span>
-                        </div>
+                      
+                      <div className="w-full md:w-24">
+                        <label className="block text-xs text-gray-500 mb-1">Porcentaje (%)</label>
+                        <input 
+                          type="number" 
+                          min="0" 
+                          max="100" 
+                          value={pp.percentage} 
+                          onChange={(e) => updatePaymentPlan(pp.id, 'percentage', Number(e.target.value))} 
+                          className="w-full p-2 border rounded text-sm" 
+                        />
                       </div>
-                      <div className="w-full md:w-48 text-right bg-gray-50 p-2 rounded border border-gray-100 flex flex-col justify-center">
-                         <span className="text-xs text-gray-500">Anticipo: ${(totalBudget * (pp.downPaymentPercentage / 100)).toLocaleString()}</span>
-                         <span className="text-sm font-bold text-gray-800">{pp.months} pagos de ${((totalBudget * (1 - (pp.downPaymentPercentage / 100))) / Math.max(1, pp.months)).toLocaleString()}</span>
+
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Hito de Activación / Entrega</label>
+                        <input 
+                          type="text" 
+                          value={pp.condition} 
+                          onChange={(e) => updatePaymentPlan(pp.id, 'condition', e.target.value)} 
+                          className="w-full p-2 border rounded text-sm" 
+                          placeholder="Ej. Firma de contrato y kickoff" 
+                        />
+                      </div>
+
+                      <div className="w-full md:w-32 text-right bg-gray-50 p-2 rounded border border-gray-100 flex flex-col justify-center mt-2 md:mt-0">
+                         <span className="text-xs text-gray-500">Monto (MXN)</span>
+                         <span className="text-sm font-bold text-gray-800">${(totalBudget * (pp.percentage / 100)).toLocaleString()}</span>
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Total Verification */}
+                  <div className="text-right pt-2 border-t border-gray-200 mt-4">
+                    <span className={`text-sm font-bold ${paymentPlans.reduce((sum, p) => sum + p.percentage, 0) === 100 ? 'text-green-600' : 'text-red-600'}`}>
+                      Total Porcentaje: {paymentPlans.reduce((sum, p) => sum + p.percentage, 0)}%
+                    </span>
+                  </div>
                 </div>
               )}
             </section>

@@ -19,8 +19,9 @@ export interface RecurringCost {
 
 export interface PaymentPlan {
   id: string;
-  months: number;
-  downPaymentPercentage: number;
+  name: string;
+  percentage: number;
+  condition: string;
 }
 
 export interface ProposalData {

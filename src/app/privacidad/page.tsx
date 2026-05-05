@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
-import WhatsAppButton from '../components/WhatsAppButton';
 export default function Privacy() {
     return (
         <motion.div

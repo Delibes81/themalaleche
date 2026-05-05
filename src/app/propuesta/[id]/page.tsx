@@ -11,6 +11,7 @@ export default function Proposal() {
   const { id } = useParams<{ id: string }>();
   const [proposalData, setProposalData] = useState<ProposalData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMockup, setSelectedMockup] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProposal() {
@@ -73,9 +74,23 @@ export default function Proposal() {
     let particles: any[] = [];
     let animationFrameId: number;
 
-    const particleCount = 60;
-    const connectionDistance = 150;
-    const particleSpeed = 0.5;
+    // Elegant SaaS configuration
+    const particleCount = 80; // More particles but smaller
+    const connectionDistance = 180;
+    const particleSpeed = 0.2; // Slower, more relaxing
+    const sunriseColors = [
+      '66, 133, 244',  // Blue
+      '255, 122, 0',   // Orange
+      '255, 75, 130',  // Pink
+      '251, 188, 5'    // Gold
+    ];
+
+    // Mouse interaction
+    let mouse = {
+      x: -1000,
+      y: -1000,
+      radius: 250 // Interaction radius
+    };
 
     function resize() {
       if (!canvas) return;
@@ -89,28 +104,52 @@ export default function Proposal() {
       vx: number;
       vy: number;
       size: number;
+      baseX: number;
+      baseY: number;
+      color: string;
 
       constructor() {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
+        this.baseX = this.x;
+        this.baseY = this.y;
         this.vx = (Math.random() - 0.5) * particleSpeed;
         this.vy = (Math.random() - 0.5) * particleSpeed;
-        this.size = Math.random() * 2 + 1;
+        this.size = Math.random() * 1.5 + 0.5; // Smaller, elegant dots
+        this.color = sunriseColors[Math.floor(Math.random() * sunriseColors.length)];
       }
 
       update() {
         this.x += this.vx;
         this.y += this.vy;
 
+        // Bounce off edges smoothly
         if (this.x < 0 || this.x > width) this.vx *= -1;
         if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        // Mouse interactivity (parallax repulsion)
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < mouse.radius) {
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const force = (mouse.radius - distance) / mouse.radius;
+          const directionX = forceDirectionX * force * 1;
+          const directionY = forceDirectionY * force * 1;
+          
+          // Gently push away
+          this.x -= directionX;
+          this.y -= directionY;
+        }
       }
 
       draw() {
         if (!ctx) return;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = `rgba(${this.color}, 0.5)`;
         ctx.fill();
       }
     }
@@ -132,6 +171,7 @@ export default function Proposal() {
         particles[i].update();
         particles[i].draw();
 
+        // Connect particles to each other
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
@@ -139,23 +179,54 @@ export default function Proposal() {
 
           if (distance < connectionDistance) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 0, 0, ${1 - distance / connectionDistance})`;
-            ctx.lineWidth = 0.5;
+            // Opacity fades as distance increases
+            const opacity = (1 - distance / connectionDistance) * 0.45;
+            ctx.strokeStyle = `rgba(${particles[i].color}, ${opacity})`;
+            ctx.lineWidth = 0.8;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.stroke();
           }
+        }
+
+        // Connect particles to mouse
+        const mouseDx = particles[i].x - mouse.x;
+        const mouseDy = particles[i].y - mouse.y;
+        const mouseDistance = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
+        
+        if (mouseDistance < connectionDistance) {
+          ctx.beginPath();
+          const opacity = (1 - mouseDistance / connectionDistance) * 0.6;
+          ctx.strokeStyle = `rgba(${particles[i].color}, ${opacity})`;
+          ctx.lineWidth = 1;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
         }
       }
 
       animationFrameId = requestAnimationFrame(animate);
     }
 
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    };
+    
+    const handleMouseLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
+
     window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
     init();
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, [proposalData]); // Re-run if data changes, though canvas is BG
@@ -181,37 +252,37 @@ export default function Proposal() {
 
       <div className="page-container">
         <header>
-          <div className="header-left">
-            <img src="/logo.png" alt="Logo" className="logo-img" style={{ filter: 'invert(1)', mixBlendMode: 'normal' }} />
-            <h1>Propuesta<br />Técnica</h1>
-            <div className="subtitle">PROJECT: THE MALA LECHE // V.1.0</div>
+          <div className="header-top">
+            <div className="header-left">
+              <img src="/logo.png" alt="Logo" className="logo-img" style={{ filter: 'invert(1)', mixBlendMode: 'normal' }} />
+              <h1>Propuesta<br />Técnica</h1>
+              <div className="subtitle">PROJECT: THE MALA LECHE // V.1.0</div>
+            </div>
+
+            <div className="client-logo-container">
+              {data.clientLogoType === 'text' ? (
+                <h2 style={{ fontSize: '28px', letterSpacing: '2px', textTransform: 'uppercase', color: '#000', margin: 0, border: 'none', fontFamily: `'${data.clientLogoFont || 'Inter'}', sans-serif` }}>
+                  {data.clientLogoValue || data.clientName}
+                </h2>
+              ) : (
+                // Placeholder para el futuro
+                <div style={{ width: '80px', height: '80px', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#999', border: '1px dashed #ccc' }}>
+                  CLIENT LOGO
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="client-logo-container" style={{ marginRight: '10px', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {data.clientLogoType === 'text' ? (
-              <h2 style={{ fontSize: '28px', letterSpacing: '2px', textTransform: 'uppercase', color: '#000', margin: 0, border: 'none', fontFamily: `'${data.clientLogoFont || 'Inter'}', sans-serif` }}>
-                {data.clientLogoValue || data.clientName}
-              </h2>
-            ) : (
-              // Placeholder para el futuro
-              <div style={{ width: '80px', height: '80px', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#999', border: '1px dashed #ccc' }}>
-                CLIENT LOGO
+          <div className="header-right-container">
+            <div className="header-right">
+              <div>
+                <span>FECHA</span>
+                <strong>{data.date}</strong>
               </div>
-            )}
-          </div>
-
-          <div className="header-right">
-            <div>
-              <span>CLIENTE</span>
-              <strong style={{textTransform: 'uppercase'}}>{data.clientName}</strong>
-            </div>
-            <div>
-              <span>FECHA</span>
-              <strong>{data.date}</strong>
-            </div>
-            <div>
-              <span>ID</span>
-              <strong>{data.id.split('-')[0]}</strong> {/* Show start of UUID as ID */}
+              <div>
+                <span>ID</span>
+                <strong>{data.id.split('-')[0]}</strong>
+              </div>
             </div>
           </div>
         </header>
@@ -231,10 +302,13 @@ export default function Proposal() {
           </div>
         </div>
 
-        <h2>01 // INICIALIZACIÓN</h2>
-        <p>{data.description}</p>
+        <div className="section-wrapper">
+          <h2>01 // INICIALIZACIÓN</h2>
+          <p>{data.description}</p>
+        </div>
 
-        <h2>02 // MÓDULOS DEL SISTEMA</h2>
+        <div className="section-wrapper">
+          <h2>02 // MÓDULOS DEL SISTEMA</h2>
         <div className="grid">
           {data.modules.map((mod) => (
             <div className="card" key={mod.id}>
@@ -247,38 +321,38 @@ export default function Proposal() {
             </div>
           ))}
         </div>
+        </div>
 
-        <h2>03 // CRONOGRAMA DE EJECUCIÓN</h2>
-        <div className="timeline-container">
-          <div className="timeline-line"></div>
-          <div className="timeline-steps">
-            {data.steps.map((step, idx) => (
-              <div className="step" key={step.id}>
-                <div className="step-dot">{(idx + 1).toString().padStart(2, '0')}</div>
-                <div className="step-label">{step.label}</div>
-              </div>
-            ))}
+        <div className="section-wrapper">
+          <h2>03 // CRONOGRAMA DE EJECUCIÓN</h2>
+          <div className="timeline-container">
+            <div className="timeline-line"></div>
+            <div className="timeline-steps">
+              {data.steps.map((step, idx) => (
+                <div className="step" key={step.id}>
+                  <div className="step-dot">{(idx + 1).toString().padStart(2, '0')}</div>
+                  <div className="step-label">{step.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {data.mockups && data.mockups.length > 0 && (
-          <>
+          <div className="section-wrapper">
             <h2>04 // MOCKUPS & REFERENCIAS</h2>
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
               {data.mockups.map((url, idx) => (
-                <div key={idx} className="card" style={{ padding: '10px' }}>
-                  <img 
-                    src={url} 
-                    alt={`Mockup ${idx + 1}`} 
-                    style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '4px', border: '1px solid var(--border)' }} 
-                  />
+                <div key={idx} className="card mockup-card" onClick={() => setSelectedMockup(url)}>
+                  <img src={url} alt={`Mockup ${idx + 1}`} />
                 </div>
               ))}
             </div>
-          </>
+          </div>
         )}
 
-        <h2>{data.mockups && data.mockups.length > 0 ? '05' : '04'} // DESGLOSE DE INVERSIÓN INICIAL</h2>
+        <div className="section-wrapper">
+          <h2>{data.mockups && data.mockups.length > 0 ? '05' : '04'} // DESGLOSE DE INVERSIÓN INICIAL</h2>
         <div className="table-container">
           <table>
             <thead>
@@ -301,9 +375,10 @@ export default function Proposal() {
             </tbody>
           </table>
         </div>
+        </div>
 
         {data.recurringCosts && data.recurringCosts.length > 0 && (
-          <>
+          <div className="section-wrapper">
             <h2>{data.mockups && data.mockups.length > 0 ? '06' : '05'} // GASTOS RECURRENTES (SERVICIOS)</h2>
             <div className="table-container">
               <table>
@@ -325,12 +400,12 @@ export default function Proposal() {
                 </tbody>
               </table>
             </div>
-          </>
+          </div>
         )}
 
         {/* Planes de Pago */}
         {data.paymentPlans && data.paymentPlans.length > 0 ? (
-          <>
+          <div className="section-wrapper">
             <h2>
               {data.recurringCosts && data.recurringCosts.length > 0 
                 ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
@@ -367,9 +442,9 @@ export default function Proposal() {
                 </tbody>
               </table>
             </div>
-          </>
+          </div>
         ) : (
-          <>
+          <div className="section-wrapper">
             <h2>
               {data.recurringCosts && data.recurringCosts.length > 0 
                 ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
@@ -401,10 +476,8 @@ export default function Proposal() {
                 </tbody>
               </table>
             </div>
-          </>
+          </div>
         )}
-
-        <div className="footer-spacer"></div>
 
         <footer>
           <div className="footer-brand">
@@ -420,6 +493,25 @@ export default function Proposal() {
           </div>
         </footer>
       </div>
+
+      {/* Botón flotante para PDF */}
+      <div className="floating-actions">
+        <button className="pdf-button" onClick={() => window.print()}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Descargar PDF
+        </button>
+      </div>
+
+      {selectedMockup && (
+        <div className="lightbox-overlay" onClick={() => setSelectedMockup(null)}>
+          <div className="lightbox-close">×</div>
+          <img src={selectedMockup} alt="Mockup Ampliado" className="lightbox-img" onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
     </div>
   );
 }

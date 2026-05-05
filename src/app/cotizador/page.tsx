@@ -22,6 +22,7 @@ export default function Cotizador() {
   const [proposals, setProposals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form State
   const [currentId, setCurrentId] = useState<string | null>(null);
@@ -163,6 +164,74 @@ export default function Cotizador() {
     } else {
       if (currentId === id) handleNew();
       fetchProposals();
+    }
+  };
+
+  const convertToWebP = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Failed to get canvas context'));
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => {
+          if (!blob) return reject(new Error('Canvas to Blob failed'));
+          const webpFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".webp", {
+            type: "image/webp",
+          });
+          resolve(webpFile);
+        }, "image/webp", 0.85); // 85% calidad para optimización
+      };
+      img.onerror = (err) => reject(err);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploadingImage(true);
+    try {
+      const files = Array.from(e.target.files);
+      const uploadedUrls: string[] = [];
+
+      for (const file of files) {
+        // Automatically convert image to WebP (unless it's a GIF)
+        let fileToUpload = file;
+        if (file.type.startsWith('image/') && file.type !== 'image/webp' && file.type !== 'image/gif') {
+           try {
+             fileToUpload = await convertToWebP(file);
+           } catch(e) {
+             console.error("Webp conversion failed, using original", e);
+           }
+        }
+
+        const fileExt = fileToUpload.name.split('.').pop() || 'webp';
+        const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `${fileName}`; // root of bucket
+
+        const { error: uploadError } = await supabase.storage
+          .from('mockups')
+          .upload(filePath, fileToUpload, {
+            contentType: fileToUpload.type
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('mockups').getPublicUrl(filePath);
+        uploadedUrls.push(data.publicUrl);
+      }
+
+      // Update mockupUrls text
+      const currentUrls = mockupUrls.split(',').map(u => u.trim()).filter(Boolean);
+      const newUrls = [...currentUrls, ...uploadedUrls];
+      setMockupUrls(newUrls.join(', '));
+    } catch (err: any) {
+      alert('Error al subir imagen: Asegúrate de haber creado el bucket público "mockups" en Supabase. Detalles: ' + err.message);
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -635,9 +704,45 @@ export default function Cotizador() {
                 </label>
               </div>
               {includeMockups && (
-                <div className="bg-white p-4 rounded border">
-                  <label className="block text-xs text-gray-500 mb-1">URLs de imágenes (separadas por coma) - Sugerencia: .webp</label>
-                  <textarea value={mockupUrls} onChange={(e) => setMockupUrls(e.target.value)} className="w-full p-2 border rounded text-sm" placeholder="Ej. https://i.imgur.com/xyz.webp, /mockup.webp" rows={3} />
+                <div className="bg-white p-4 rounded border space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Subir Imágenes (Se guardarán en Supabase Storage)</label>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple 
+                      onChange={handleImageUpload} 
+                      disabled={uploadingImage}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 disabled:opacity-50"
+                    />
+                    {uploadingImage && <p className="text-sm text-blue-600 mt-2">Subiendo imágenes a la nube, por favor espera...</p>}
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <label className="block text-xs text-gray-500 mb-1">URLs generadas automáticamente (puedes editarlas si lo necesitas):</label>
+                    <textarea value={mockupUrls} onChange={(e) => setMockupUrls(e.target.value)} className="w-full p-2 border rounded text-sm" placeholder="Ej. https://i.imgur.com/xyz.webp" rows={3} />
+                  </div>
+
+                  {mockupUrls && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+                      {mockupUrls.split(',').map((url, i) => url.trim() ? (
+                        <div key={i} className="relative group">
+                          <img src={url.trim()} alt="mockup preview" className="w-full h-24 object-cover rounded border border-gray-200" />
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              const urls = mockupUrls.split(',').map(u => u.trim()).filter(Boolean);
+                              urls.splice(i, 1);
+                              setMockupUrls(urls.join(', '));
+                            }} 
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ) : null)}
+                    </div>
+                  )}
                 </div>
               )}
             </section>

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { pathname } = useLocation();
+  const pathname = usePathname();
 
   const handleHomeClick = () => {
     if (pathname === '/') {
@@ -76,14 +78,14 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link to="/" onClick={handleHomeClick}>
+          <Link href="/" onClick={handleHomeClick}>
             <motion.div
               className="flex items-center gap-3 relative z-50 cursor-pointer"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <img src="/logo.png" alt="The Mala Leche Logo" className="w-10 h-10 md:w-16 md:h-16 object-contain" />
+              <Image src="/logo.png" alt="The Mala Leche Logo" width={64} height={64} className="w-10 h-10 md:w-16 md:h-16 object-contain" priority />
               <span className={`font-bold text-lg md:text-xl tracking-wider uppercase transition-colors duration-300 ${isOpen ? 'text-gray-900' : 'text-gray-900'}`}>
                 The Mala Leche
               </span>
@@ -102,7 +104,7 @@ export default function Navbar() {
               >
                 {item === 'Inicio' ? (
                   <Link
-                    to="/"
+                    href="/"
                     onClick={handleHomeClick}
                     className="text-gray-600 hover:text-gray-900 transition-colors text-sm tracking-wide uppercase font-light"
                   >
@@ -110,7 +112,7 @@ export default function Navbar() {
                   </Link>
                 ) : (
                   <Link
-                    to={`/#${item.toLowerCase()}`}
+                    href={`/#${item.toLowerCase()}`}
                     className="text-gray-600 hover:text-gray-900 transition-colors text-sm tracking-wide uppercase font-light"
                   >
                     {item}
@@ -169,7 +171,7 @@ export default function Navbar() {
                 <div key={item} className="overflow-hidden">
                   {item === 'Inicio' ? (
                     <Link
-                      to="/"
+                      href="/"
                       className="block text-4xl font-bold text-gray-900 tracking-tight hover:text-gray-600 transition-colors"
                       onClick={handleHomeClick}
                     >
@@ -178,7 +180,7 @@ export default function Navbar() {
                   ) : (
                     <motion.div custom={i} variants={linkVariants}>
                       <Link
-                        to={`/#${item.toLowerCase()}`}
+                        href={`/#${item.toLowerCase()}`}
                         className="block text-4xl font-bold text-gray-900 tracking-tight hover:text-gray-600 transition-colors"
                         onClick={() => setIsOpen(false)}
                       >

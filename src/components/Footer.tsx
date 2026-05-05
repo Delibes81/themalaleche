@@ -1,5 +1,6 @@
 import { Instagram } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src="/logo.png" alt="The Mala Leche Logo" className="w-12 h-12 object-contain" />
+              <Image src="/logo.png" alt="The Mala Leche Logo" width={48} height={48} className="w-12 h-12 object-contain" />
               <span className="text-gray-900 font-bold text-lg tracking-wider uppercase">
                 The Mala Leche
               </span>
@@ -54,9 +55,9 @@ export default function Footer() {
               © 2025 The Mala Leche. Todos los derechos reservados. Hecho con mala leche.
             </p>
             <div className="flex items-center gap-4 text-xs text-gray-500">
-              <Link to="/privacidad" className="hover:text-gray-900 transition-colors">Privacidad</Link>
+              <Link href="/privacidad" className="hover:text-gray-900 transition-colors">Privacidad</Link>
               <span>·</span>
-              <Link to="/terminos" className="hover:text-gray-900 transition-colors">Términos</Link>
+              <Link href="/terminos" className="hover:text-gray-900 transition-colors">Términos</Link>
             </div>
           </div>
         </div>

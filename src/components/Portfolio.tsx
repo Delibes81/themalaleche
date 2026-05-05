@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 
 const projects = [
   {
@@ -68,10 +69,11 @@ export default function Portfolio() {
               <a href={project.link} target="_blank" rel="noopener noreferrer" className="block h-full">
                 <div className="aspect-video bg-gradient-to-br from-gray-200 to-transparent relative overflow-hidden">
                   {project.image ? (
-                    <img
+                    <Image
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                      fill
+                      className="object-cover transform group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.05),transparent_50%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

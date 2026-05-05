@@ -39,6 +39,7 @@ export default function Proposal() {
           steps: data.steps || [],
           mockups: data.mockups || [],
           recurringCosts: data.recurring_costs || [],
+          paymentPlans: data.payment_plans || [],
           clientLogoType: data.client_logo_type,
           clientLogoValue: data.client_logo_value,
           clientLogoFont: data.client_logo_font || 'Inter'

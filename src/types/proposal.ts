@@ -24,6 +24,12 @@ export interface PaymentPlan {
   condition: string;
 }
 
+export interface ProposalDiscount {
+  id: string;
+  description: string;
+  amount: number;
+}
+
 export interface ProposalData {
   id: string; // From Supabase
   clientName: string;
@@ -38,6 +44,8 @@ export interface ProposalData {
   mockups?: string[];
   recurringCosts?: RecurringCost[];
   paymentPlans?: PaymentPlan[];
+  discounts?: ProposalDiscount[];
+  includeIva?: boolean;
   clientLogoType: 'text' | 'image';
   clientLogoValue: string;
   clientLogoFont?: string;

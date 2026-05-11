@@ -66,7 +66,7 @@ export default function Hero() {
           >
             Hagamos la web que tu marca se merece.
             <br className="hidden md:block" />
-            <span className="font-medium text-gray-900">React, Supabase y 0% tonterías.</span>
+            <span className="font-medium text-gray-900">Next.js, TypeScript y código crudo para operaciones serias.</span>
           </motion.p>
 
           <motion.div

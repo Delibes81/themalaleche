@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
-import { ProposalModule, ProposalStep, RecurringCost, PaymentPlan } from '../../types/proposal';
+import { ProposalModule, ProposalStep, RecurringCost, PaymentPlan, ProposalDiscount } from '../../types/proposal';
 import { Session } from '@supabase/supabase-js';
 
 const AVAILABLE_FONTS = [
@@ -48,6 +48,8 @@ export default function Cotizador() {
 
   const [recurringCosts, setRecurringCosts] = useState<RecurringCost[]>([]);
   const [paymentPlans, setPaymentPlans] = useState<PaymentPlan[]>([]);
+  const [discounts, setDiscounts] = useState<ProposalDiscount[]>([]);
+  const [includeIva, setIncludeIva] = useState(false);
 
   const [steps, setSteps] = useState<ProposalStep[]>([
     { id: '1', label: 'Diseño & DB' },
@@ -56,7 +58,11 @@ export default function Cotizador() {
     { id: '4', label: 'QA & Launch' }
   ]);
 
-  const totalBudget = useMemo(() => modules.reduce((sum, mod) => sum + mod.cost, 0), [modules]);
+  const totalBudget = useMemo(() => {
+    const modulesSum = modules.reduce((sum, mod) => sum + mod.cost, 0);
+    const discountsSum = discounts.reduce((sum, d) => sum + d.amount, 0);
+    return Math.max(0, modulesSum - discountsSum);
+  }, [modules, discounts]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -121,6 +127,8 @@ export default function Cotizador() {
     setModules([{ id: Date.now().toString(), title: 'Frontend Core', features: ['UX/UI Reactivo'], cost: 5000 }]);
     setRecurringCosts([]);
     setPaymentPlans([]);
+    setDiscounts([]);
+    setIncludeIva(false);
     setSteps([
       { id: '1', label: 'Diseño & DB' },
       { id: '2', label: 'Admin Panel' },
@@ -142,6 +150,8 @@ export default function Cotizador() {
     setModules(p.modules || []);
     setRecurringCosts(p.recurring_costs || []);
     setPaymentPlans(p.payment_plans || []);
+    setDiscounts(p.discounts || []);
+    setIncludeIva(p.include_iva || false);
     setSteps(p.steps || []);
     
     if (p.mockups && p.mockups.length > 0) {
@@ -255,6 +265,8 @@ export default function Cotizador() {
       steps,
       recurring_costs: recurringCosts,
       payment_plans: paymentPlans,
+      discounts: discounts,
+      include_iva: includeIva,
       mockups: mockupsArray,
       client_logo_type: clientLogoType,
       client_logo_value: clientLogoValue || clientName,
@@ -336,6 +348,17 @@ export default function Cotizador() {
   };
   const removePaymentPlan = (id: string) => {
     setPaymentPlans(paymentPlans.filter(pp => pp.id !== id));
+  };
+
+  // Discounts Helpers
+  const addDiscount = () => {
+    setDiscounts([...discounts, { id: Date.now().toString(), description: 'Descuento especial', amount: 500 }]);
+  };
+  const updateDiscount = (id: string, field: keyof ProposalDiscount, value: any) => {
+    setDiscounts(discounts.map(d => d.id === id ? { ...d, [field]: value } : d));
+  };
+  const removeDiscount = (id: string) => {
+    setDiscounts(discounts.filter(d => d.id !== id));
   };
 
   // Step Helpers
@@ -569,9 +592,44 @@ export default function Cotizador() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 text-right">
+              <div className="mt-4 text-right flex flex-col gap-1 items-end">
+                <span className="text-sm text-gray-500">Subtotal Módulos: ${modules.reduce((sum, mod) => sum + mod.cost, 0).toLocaleString()} MXN</span>
+                {discounts.length > 0 && (
+                  <span className="text-sm text-red-500">Descuentos: -${discounts.reduce((sum, d) => sum + d.amount, 0).toLocaleString()} MXN</span>
+                )}
                 <span className="text-lg font-bold text-gray-800">Inversión Inicial Total: ${totalBudget.toLocaleString()} MXN</span>
+                <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                  <input type="checkbox" checked={includeIva} onChange={(e) => setIncludeIva(e.target.checked)} className="rounded border-gray-300 text-black focus:ring-black" />
+                  <span className="text-sm font-medium text-gray-700">Mostrar leyenda "+ IVA" en propuesta</span>
+                </label>
               </div>
+            </section>
+
+            {/* Discounts */}
+            <section className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Descuentos</h3>
+                <button onClick={addDiscount} className="px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-800">+ Descuento</button>
+              </div>
+              {discounts.length === 0 ? (
+                <p className="text-sm text-gray-500 italic">No hay descuentos aplicados.</p>
+              ) : (
+                <div className="space-y-3">
+                  {discounts.map((d) => (
+                    <div key={d.id} className="flex flex-col md:flex-row gap-3 bg-white p-3 rounded border items-end relative">
+                      <button onClick={() => removeDiscount(d.id)} className="absolute top-1 right-1 text-red-500 text-xs font-bold md:static md:mb-2">✕</button>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Descripción del Descuento</label>
+                        <input type="text" value={d.description} onChange={(e) => updateDiscount(d.id, 'description', e.target.value)} className="w-full p-2 border rounded text-sm font-medium" placeholder="Ej. Cliente frecuente" />
+                      </div>
+                      <div className="w-full md:w-32">
+                        <label className="block text-xs text-gray-500 mb-1">Monto (MXN)</label>
+                        <input type="number" step="100" value={d.amount} onChange={(e) => updateDiscount(d.id, 'amount', Number(e.target.value))} className="w-full p-2 border rounded text-sm" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Recurring Costs */}

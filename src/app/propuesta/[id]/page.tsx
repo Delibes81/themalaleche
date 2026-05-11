@@ -21,7 +21,7 @@ export default function Proposal() {
         .select('*')
         .eq('id', id)
         .single();
-        
+
       if (error) {
         console.error("Error fetching proposal", error);
         setError("No se pudo cargar la propuesta. Es posible que el enlace no sea válido.");
@@ -41,6 +41,8 @@ export default function Proposal() {
           mockups: data.mockups || [],
           recurringCosts: data.recurring_costs || [],
           paymentPlans: data.payment_plans || [],
+          discounts: data.discounts || [],
+          includeIva: data.include_iva || false,
           clientLogoType: data.client_logo_type,
           clientLogoValue: data.client_logo_value,
           clientLogoFont: data.client_logo_font || 'Inter'
@@ -131,14 +133,14 @@ export default function Proposal() {
         let dx = mouse.x - this.x;
         let dy = mouse.y - this.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
-        
+
         if (distance < mouse.radius) {
           const forceDirectionX = dx / distance;
           const forceDirectionY = dy / distance;
           const force = (mouse.radius - distance) / mouse.radius;
           const directionX = forceDirectionX * force * 1;
           const directionY = forceDirectionY * force * 1;
-          
+
           // Gently push away
           this.x -= directionX;
           this.y -= directionY;
@@ -193,7 +195,7 @@ export default function Proposal() {
         const mouseDx = particles[i].x - mouse.x;
         const mouseDy = particles[i].y - mouse.y;
         const mouseDistance = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
-        
+
         if (mouseDistance < connectionDistance) {
           ctx.beginPath();
           const opacity = (1 - mouseDistance / connectionDistance) * 0.6;
@@ -212,7 +214,7 @@ export default function Proposal() {
       mouse.x = e.x;
       mouse.y = e.y;
     };
-    
+
     const handleMouseLeave = () => {
       mouse.x = -1000;
       mouse.y = -1000;
@@ -290,15 +292,15 @@ export default function Proposal() {
         <div className="system-status">
           <div className="status-item">
             <span className="status-label">Tiempo Est.</span>
-            <span className="status-value" style={{textTransform: 'uppercase'}}>{data.timeEstimate}</span>
+            <span className="status-value" style={{ textTransform: 'uppercase' }}>{data.timeEstimate}</span>
           </div>
           <div className="status-item">
             <span className="status-label">Stack</span>
-            <span className="status-value" style={{textTransform: 'uppercase'}}>{data.stack}</span>
+            <span className="status-value" style={{ textTransform: 'uppercase' }}>{data.stack}</span>
           </div>
           <div className="status-item">
             <span className="status-label">Status</span>
-            <span className="status-value" style={{textTransform: 'uppercase'}}>{data.status}</span>
+            <span className="status-value" style={{ textTransform: 'uppercase' }}>{data.status}</span>
           </div>
         </div>
 
@@ -309,18 +311,18 @@ export default function Proposal() {
 
         <div className="section-wrapper">
           <h2>02 // MÓDULOS DEL SISTEMA</h2>
-        <div className="grid">
-          {data.modules.map((mod) => (
-            <div className="card" key={mod.id}>
-              <h3>{mod.title}</h3>
-              <ul>
-                {mod.features.map((feat, idx) => (
-                  <li key={idx}>{feat}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+          <div className="grid">
+            {data.modules.map((mod) => (
+              <div className="card" key={mod.id}>
+                <h3>{mod.title}</h3>
+                <ul>
+                  {mod.features.map((feat, idx) => (
+                    <li key={idx}>{feat}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="section-wrapper">
@@ -353,28 +355,42 @@ export default function Proposal() {
 
         <div className="section-wrapper">
           <h2>{data.mockups && data.mockups.length > 0 ? '05' : '04'} // DESGLOSE DE INVERSIÓN INICIAL</h2>
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Módulo</th>
-                <th style={{ textAlign: 'right' }}>Costo (MXN)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.modules.map(mod => (
-                <tr key={mod.id}>
-                  <td><strong style={{textTransform: 'uppercase'}}>{mod.title}</strong></td>
-                  <td style={{ textAlign: 'right' }}>${mod.cost.toLocaleString()}</td>
+          <div className="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Módulo</th>
+                  <th style={{ textAlign: 'right' }}>Costo (MXN){data.includeIva ? ' + IVA' : ''}</th>
                 </tr>
-              ))}
-              <tr className="total-row">
-                <td>INVERSIÓN INICIAL TOTAL</td>
-                <td style={{ textAlign: 'right' }}>${data.budget.toLocaleString()}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {data.modules.map(mod => (
+                  <tr key={mod.id}>
+                    <td><strong style={{ textTransform: 'uppercase' }}>{mod.title}</strong></td>
+                    <td style={{ textAlign: 'right' }}>${mod.cost.toLocaleString()}</td>
+                  </tr>
+                ))}
+                {data.discounts && data.discounts.length > 0 && (
+                  <>
+                    <tr style={{ borderTop: '1px solid #eaeaea', backgroundColor: '#fafafa' }}>
+                      <td><strong style={{ textTransform: 'uppercase', color: '#666', fontSize: '0.9rem' }}>SUBTOTAL</strong></td>
+                      <td style={{ textAlign: 'right', color: '#666' }}><strong>${data.modules.reduce((sum, mod) => sum + mod.cost, 0).toLocaleString()}</strong></td>
+                    </tr>
+                    {data.discounts.map(disc => (
+                      <tr key={disc.id}>
+                        <td><strong style={{ textTransform: 'uppercase', color: '#ef4444' }}>{disc.description} (DESCUENTO)</strong></td>
+                        <td style={{ textAlign: 'right', color: '#ef4444' }}>-${disc.amount.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+                <tr className="total-row">
+                  <td>INVERSIÓN INICIAL TOTAL {data.includeIva && <span style={{ fontSize: '0.85em', fontWeight: 'normal', color: '#555', marginLeft: '4px' }}>+ IVA</span>}</td>
+                  <td style={{ textAlign: 'right' }}>${data.budget.toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {data.recurringCosts && data.recurringCosts.length > 0 && (
@@ -386,14 +402,14 @@ export default function Proposal() {
                   <tr>
                     <th>Servicio</th>
                     <th>Periodicidad</th>
-                    <th style={{ textAlign: 'right' }}>Costo (MXN)</th>
+                    <th style={{ textAlign: 'right' }}>Costo (MXN){data.includeIva ? ' + IVA' : ''}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.recurringCosts.map(rc => (
                     <tr key={rc.id}>
-                      <td><strong style={{textTransform: 'uppercase'}}>{rc.name}</strong></td>
-                      <td style={{textTransform: 'uppercase'}}>{rc.period}</td>
+                      <td><strong style={{ textTransform: 'uppercase' }}>{rc.name}</strong></td>
+                      <td style={{ textTransform: 'uppercase' }}>{rc.period}</td>
                       <td style={{ textAlign: 'right' }}>${rc.cost.toLocaleString()}</td>
                     </tr>
                   ))}
@@ -407,8 +423,8 @@ export default function Proposal() {
         {data.paymentPlans && data.paymentPlans.length > 0 ? (
           <div className="section-wrapper">
             <h2>
-              {data.recurringCosts && data.recurringCosts.length > 0 
-                ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
+              {data.recurringCosts && data.recurringCosts.length > 0
+                ? (data.mockups && data.mockups.length > 0 ? '07' : '06')
                 : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // ESTRUCTURA DE PAGOS
             </h2>
             <div className="table-container payment-table-container">
@@ -417,7 +433,7 @@ export default function Proposal() {
                   <tr>
                     <th>Pago</th>
                     <th>Porcentaje</th>
-                    <th>Monto (MXN)</th>
+                    <th>Monto (MXN){data.includeIva ? ' + IVA' : ''}</th>
                     <th>Hito de Activación / Entrega</th>
                   </tr>
                 </thead>
@@ -446,8 +462,8 @@ export default function Proposal() {
         ) : (
           <div className="section-wrapper">
             <h2>
-              {data.recurringCosts && data.recurringCosts.length > 0 
-                ? (data.mockups && data.mockups.length > 0 ? '07' : '06') 
+              {data.recurringCosts && data.recurringCosts.length > 0
+                ? (data.mockups && data.mockups.length > 0 ? '07' : '06')
                 : (data.mockups && data.mockups.length > 0 ? '06' : '05')} // ESTRUCTURA DE PAGOS
             </h2>
             <div className="table-container payment-table-container">
@@ -456,7 +472,7 @@ export default function Proposal() {
                   <tr>
                     <th>Pago</th>
                     <th>Porcentaje</th>
-                    <th>Monto (MXN)</th>
+                    <th>Monto (MXN){data.includeIva ? ' + IVA' : ''}</th>
                     <th>Hito de Activación / Entrega</th>
                   </tr>
                 </thead>
@@ -482,7 +498,7 @@ export default function Proposal() {
         <footer>
           <div className="footer-brand">
             GENERATED BY
-            <span>THE MALA LECHE STUDIO</span>
+            <span>THE MALA LECHE WEB STUDIO</span>
           </div>
           <div className="footer-dev">
             <div className="dev-info">

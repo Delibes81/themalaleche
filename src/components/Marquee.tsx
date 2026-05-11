@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 
 const defaultWords = [
-    "CERO GRASA",
+    "CODIGO LIMPIO",
     "CERO PLUGINS INÚTILES",
     "VENDER O MORIR",
-    "PAGA TUS FACTURAS",
+    "REACT, NEXT.JS",
+    "CODIGO DE VERDAD",
     "VELOCIDAD ILEGAL"
 ];
 

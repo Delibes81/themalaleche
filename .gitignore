@@ -24,3 +24,7 @@ dist-ssr
 
 # Next.js
 .next
+.env*.local
+.vercel
+next-env.d.ts
+*.tsbuildinfo

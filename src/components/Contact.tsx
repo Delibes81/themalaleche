@@ -3,7 +3,16 @@ import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 
-const InputField = ({ label, name, type = 'text', value, onChange, error }: any) => {
+type InputFieldProps = {
+  label: string;
+  name: string;
+  type?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  error?: string;
+};
+
+const InputField = ({ label, name, type = 'text', value, onChange, error }: InputFieldProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (

@@ -1,0 +1,70 @@
+{
+  "_nota": "Fuente única de precios. Edita aquí y regenera modulos.md con: python3 cotizacion/calcular.py --catalogo > cotizacion/modulos.md",
+  "moneda": "MXN",
+  "tarifa_hora": 600,
+  "contingencia": 0.15,
+  "redondeo": 500,
+  "horas_productivas_semana": 15,
+  "niveles": {
+    "N1": {"nombre": "Landing page", "horas": 14, "incluye": "1 página hasta 7 secciones, propuesta visual (2 direcciones), formulario o WhatsApp, SEO base, 2 rondas de cambios", "mercado": [7000, 15000]},
+    "N2": {"nombre": "Sitio informativo", "horas": 26, "incluye": "hasta 5 páginas, propuesta visual, formulario, SEO por página, mapa, 2 rondas de cambios", "mercado": [14000, 25000]},
+    "N3": {"nombre": "Sitio corporativo / captación", "horas": 45, "incluye": "hasta 10 páginas, blog, formularios guardados en Supabase con aviso por correo, SEO, analítica, 2 rondas", "mercado": [25000, 60000]},
+    "N4": {"nombre": "Tienda en línea", "horas": 85, "incluye": "catálogo hasta 30 productos, carrito, Stripe Checkout, órdenes en Supabase, panel de pedidos y productos, correos de confirmación", "mercado": [40000, 180000]},
+    "N5": {"nombre": "Aplicación web a medida (base)", "horas": 100, "incluye": "login, 2 roles, 1 módulo CRUD, dashboard básico, panel administrativo; cada módulo adicional se suma", "mercado": [80000, 400000]}
+  },
+  "modulos": {
+    "pagina-extra": {"nombre": "Página adicional", "horas": 2.5, "unidad": "página"},
+    "seccion-extra": {"nombre": "Sección adicional en landing", "horas": 1, "unidad": "sección"},
+    "redaccion": {"nombre": "Redacción de textos", "horas": 1.5, "unidad": "página"},
+    "migracion": {"nombre": "Migración de contenido del sitio anterior", "horas": 1, "unidad": "página"},
+    "mini-identidad": {"nombre": "Mini identidad visual (paleta, tipografía, estilo, sin logo)", "horas": 5},
+    "logotipo": {"nombre": "Logotipo tipográfico (2 conceptos, 1 ronda)", "horas": 8},
+    "animacion-avanzada": {"nombre": "Escena animada o interacción destacada", "horas": 6, "unidad": "escena"},
+    "blog-archivos": {"nombre": "Blog administrado por la agencia (MDX)", "horas": 5},
+    "blog-panel": {"nombre": "Blog editable por el cliente (Supabase + panel)", "horas": 10},
+    "formulario-supabase": {"nombre": "Formulario guardado en Supabase + aviso por correo", "horas": 4},
+    "agenda-externa": {"nombre": "Agenda con herramienta externa integrada", "horas": 3},
+    "reservas-propias": {"nombre": "Sistema de reservas propio (Supabase)", "horas": 16},
+    "auth": {"nombre": "Registro e inicio de sesión de usuarios", "horas": 8},
+    "rol-extra": {"nombre": "Rol de usuario adicional con permisos", "horas": 4, "unidad": "rol"},
+    "crud": {"nombre": "Módulo administrativo CRUD", "horas": 6, "unidad": "entidad"},
+    "dashboard": {"nombre": "Dashboard con indicadores", "horas": 10},
+    "pago-unico": {"nombre": "Cobro en línea con Stripe (pagos únicos, sin tienda)", "horas": 8},
+    "suscripciones": {"nombre": "Suscripciones recurrentes con Stripe", "horas": 12},
+    "productos-extra": {"nombre": "Carga de productos adicionales", "horas": 4, "unidad": "bloque de 50"},
+    "variantes": {"nombre": "Variantes de producto (talla, color)", "horas": 6},
+    "cupones": {"nombre": "Cupones de descuento", "horas": 4},
+    "envios": {"nombre": "Envíos por zona o tarifa", "horas": 6},
+    "facturacion-cfdi": {"nombre": "Integración de facturación CFDI (requiere evaluación)", "horas": 16},
+    "integracion-api": {"nombre": "Integración con sistema externo (CRM, ERP, API)", "horas": 10, "unidad": "integración"},
+    "correos-transaccionales": {"nombre": "Correos transaccionales personalizados", "horas": 4},
+    "seo-local": {"nombre": "SEO local + Google Business Profile", "horas": 3},
+    "analitica": {"nombre": "Analítica + aviso de privacidad y consentimiento", "horas": 3},
+    "ronda-extra": {"nombre": "Ronda adicional de cambios", "horas": 3, "unidad": "ronda"}
+  },
+  "multiplicadores": {
+    "urgente": {"nombre": "Urgencia (entrega en menos de la mitad del tiempo normal)", "factor": 1.25},
+    "multilenguaje": {"nombre": "Segundo idioma", "factor": 1.3},
+    "complejidad-alta": {"nombre": "Requisitos poco claros o integración sin documentación", "factor": 1.2}
+  },
+  "descuento_maximo": 0.10,
+  "pagos": {
+    "N1": "50% anticipo, 50% al lanzar",
+    "N2": "50% anticipo, 30% al aprobar el preview, 20% al lanzar",
+    "N3": "50% anticipo, 30% al aprobar el preview, 20% al lanzar",
+    "N4": "40% anticipo, 30% al aprobar el preview, 30% al lanzar",
+    "N5": "30% anticipo y pagos por hito según el plan de trabajo"
+  },
+  "mantenimiento": {
+    "Básico": {"precio_mes": 1200, "incluye": "monitoreo, actualizaciones de seguridad, revisión de respaldos, 1 h de cambios"},
+    "Crecimiento": {"precio_mes": 2900, "incluye": "todo Básico, 4 h de cambios, reporte mensual de visitas y SEO básico"},
+    "Pro": {"precio_mes": 5900, "incluye": "todo Crecimiento, 10 h de mejoras, prioridad de respuesta, revisión trimestral"}
+  },
+  "costos_cliente": [
+    "Dominio .com o .mx: aprox. $250–$600 MXN al año",
+    "Vercel: el plan gratuito (Hobby) no permite uso comercial; plan Pro desde US$20 por usuario al mes",
+    "Supabase (si aplica): el plan gratuito pausa proyectos tras 7 días sin actividad; para producción, plan Pro desde US$25 al mes",
+    "Stripe (si aplica): 3.6% + $3 MXN por cobro con tarjeta nacional, más IVA; tarjetas internacionales +0.5%",
+    "Correo con dominio y servicio de envío de correos: según proveedor"
+  ]
+}

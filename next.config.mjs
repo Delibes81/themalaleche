@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    unoptimized: true,
+  poweredByHeader: false,
+  async redirects() {
+    return [{ source: '/cotizador', destination: '/admin/cotizador', permanent: false }];
   },
 };
 

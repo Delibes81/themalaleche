@@ -8,5 +8,6 @@ export function supabaseEnv() {
 }
 
 export function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+  const fallback = process.env.NODE_ENV === 'production' ? 'https://themalaleche.com' : 'http://localhost:3000';
+  return (process.env.NEXT_PUBLIC_SITE_URL || fallback).replace(/\/$/, '');
 }

@@ -27,3 +27,19 @@
     @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
   }
 }
+/* Markdown del dashboard (documentos de agentes y respuestas de cuestionario) */
+.md h1 { @apply mb-3 mt-6 text-xl font-bold; }
+.md h2 { @apply mb-2 mt-6 border-b border-[#eef0f2] pb-1 text-base font-bold; }
+.md h3 { @apply mb-2 mt-4 font-semibold; }
+.md p { @apply my-2; }
+.md ul { @apply my-2 list-disc pl-5; }
+.md ol { @apply my-2 list-decimal pl-5; }
+.md li { @apply my-0.5; }
+.md table { @apply my-3 w-full border-collapse text-left text-xs; }
+.md th, .md td { @apply border border-[#e4e7eb] px-2 py-1.5 align-top; }
+.md th { @apply bg-[#f6f7f8] font-semibold; }
+.md code { @apply bg-[#f1f2f4] px-1 font-mono text-xs; }
+.md pre { @apply my-3 overflow-x-auto bg-[#111418] p-3 text-xs text-white; }
+.md pre code { @apply bg-transparent p-0 text-white; }
+.md a { @apply underline underline-offset-2; }
+.md blockquote { @apply border-l-2 border-[#C73526] pl-3 text-[#4a5159]; }

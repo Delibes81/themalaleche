@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /cotizador
+Disallow: /propuesta/
+Disallow: /cuestionario/
 
 Sitemap: https://themalaleche.com/sitemap.xml

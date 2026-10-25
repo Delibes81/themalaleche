@@ -1,9 +1,30 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
-import { ProposalModule, ProposalStep, RecurringCost, PaymentPlan, ProposalDiscount } from '../../types/proposal';
-import { Session } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/client';
+import type { ProposalModule, ProposalStep, RecurringCost, PaymentPlan, ProposalDiscount } from '@/types/proposal';
+
+type ProposalRow = {
+  id: string;
+  created_at: string;
+  project_id: string | null;
+  client_name: string | null;
+  client_logo_type: 'text' | 'image' | null;
+  client_logo_value: string | null;
+  client_logo_font: string | null;
+  description: string | null;
+  time_estimate: string | null;
+  stack: string | null;
+  status: string | null;
+  budget: number | null;
+  modules: ProposalModule[] | null;
+  recurring_costs: RecurringCost[] | null;
+  payment_plans: PaymentPlan[] | null;
+  discounts: ProposalDiscount[] | null;
+  include_iva: boolean | null;
+  steps: ProposalStep[] | null;
+  mockups: string[] | null;
+};
 
 const AVAILABLE_FONTS = [
   { name: 'Inter', family: "'Inter', sans-serif" },
@@ -13,19 +34,16 @@ const AVAILABLE_FONTS = [
   { name: 'JetBrains Mono', family: "'JetBrains Mono', monospace" }
 ];
 
-export default function Cotizador() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [authLoading, setAuthLoading] = useState(true);
-
-  const [proposals, setProposals] = useState<any[]>([]);
+export default function Cotizador({ initialId }: { initialId?: string }) {
+  const supabase = useMemo(() => createClient(), []);
+  const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form State
   const [currentId, setCurrentId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [clientName, setClientName] = useState('');
   const [clientLogoType, setClientLogoType] = useState<'text' | 'image'>('text');
   const [clientLogoValue, setClientLogoValue] = useState('H. DE HELENA');
@@ -64,38 +82,6 @@ export default function Cotizador() {
     return Math.max(0, modulesSum - discountsSum);
   }, [modules, discounts]);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setAuthLoading(false);
-      if (session) fetchProposals();
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) fetchProposals();
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) alert(error.message);
-    setAuthLoading(false);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
-
   const fetchProposals = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -104,16 +90,21 @@ export default function Cotizador() {
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching proposals:', error);
       alert('Error al cargar cotizaciones: ' + error.message);
     } else {
-      setProposals(data || []);
+      const rows = (data || []) as ProposalRow[];
+      setProposals(rows);
+      setLoading(false);
+      return rows;
     }
     setLoading(false);
+    return [] as ProposalRow[];
   };
+
 
   const handleNew = () => {
     setCurrentId(null);
+    setProjectId(null);
     setClientName('');
     setClientLogoType('text');
     setClientLogoValue('');
@@ -137,8 +128,9 @@ export default function Cotizador() {
     ]);
   };
 
-  const handleEdit = (p: any) => {
+  const handleEdit = (p: ProposalRow) => {
     setCurrentId(p.id);
+    setProjectId(p.project_id);
     setClientName(p.client_name || '');
     setClientLogoType(p.client_logo_type || 'text');
     setClientLogoValue(p.client_logo_value || '');
@@ -164,6 +156,24 @@ export default function Cotizador() {
     
     window.scrollTo({ top: document.getElementById('form-section')?.offsetTop || 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data, error } = await supabase.from('proposals').select('*').order('created_at', { ascending: false });
+      if (!active) return;
+      if (error) alert('Error al cargar cotizaciones: ' + error.message);
+      const rows = (data || []) as ProposalRow[];
+      setProposals(rows);
+      setLoading(false);
+      const initial = initialId ? rows.find((r) => r.id === initialId) : undefined;
+      if (initial) handleEdit(initial);
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar esta cotización?')) return;
@@ -213,8 +223,8 @@ export default function Cotizador() {
         if (file.type.startsWith('image/') && file.type !== 'image/webp' && file.type !== 'image/gif') {
            try {
              fileToUpload = await convertToWebP(file);
-           } catch(e) {
-             console.error("Webp conversion failed, using original", e);
+           } catch {
+             // Si falla la conversión se sube el archivo original
            }
         }
 
@@ -238,8 +248,8 @@ export default function Cotizador() {
       const currentUrls = mockupUrls.split(',').map(u => u.trim()).filter(Boolean);
       const newUrls = [...currentUrls, ...uploadedUrls];
       setMockupUrls(newUrls.join(', '));
-    } catch (err: any) {
-      alert('Error al subir imagen: Asegúrate de haber creado el bucket público "mockups" en Supabase. Detalles: ' + err.message);
+    } catch (err) {
+      alert('Error al subir imagen: Asegúrate de haber creado el bucket público "mockups" en Supabase. Detalles: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setUploadingImage(false);
     }
@@ -270,7 +280,8 @@ export default function Cotizador() {
       mockups: mockupsArray,
       client_logo_type: clientLogoType,
       client_logo_value: clientLogoValue || clientName,
-      client_logo_font: clientLogoFont
+      client_logo_font: clientLogoFont,
+      project_id: projectId,
     };
 
     let error;
@@ -285,7 +296,6 @@ export default function Cotizador() {
     setSaving(false);
 
     if (error) {
-      console.error(error);
       alert('Error al guardar: ' + error.message);
     } else {
       alert('¡Cotización guardada exitosamente!');
@@ -296,7 +306,7 @@ export default function Cotizador() {
 
   // Module Helpers
   const addModule = () => setModules([...modules, { id: Date.now().toString(), title: 'Nuevo Módulo', features: ['Característica 1'], cost: 1000 }]);
-  const updateModule = (id: string, field: keyof ProposalModule, value: any) => setModules(modules.map(m => m.id === id ? { ...m, [field]: value } : m));
+  const updateModule = <K extends keyof ProposalModule>(id: string, field: K, value: ProposalModule[K]) => setModules(modules.map(m => m.id === id ? { ...m, [field]: value } : m));
   const removeModule = (id: string) => setModules(modules.filter(m => m.id !== id));
   
   const addFeature = (moduleId: string) => {
@@ -332,7 +342,7 @@ export default function Cotizador() {
   const addRecurringCost = () => {
     setRecurringCosts([...recurringCosts, { id: Date.now().toString(), name: 'Hosting (Ej. Supabase)', cost: 500, period: 'Mensual' }]);
   };
-  const updateRecurringCost = (id: string, field: keyof RecurringCost, value: any) => {
+  const updateRecurringCost = <K extends keyof RecurringCost>(id: string, field: K, value: RecurringCost[K]) => {
     setRecurringCosts(recurringCosts.map(rc => rc.id === id ? { ...rc, [field]: value } : rc));
   };
   const removeRecurringCost = (id: string) => {
@@ -343,7 +353,7 @@ export default function Cotizador() {
   const addPaymentPlan = () => {
     setPaymentPlans([...paymentPlans, { id: Date.now().toString(), name: 'Anticipo', percentage: 50, condition: 'Firma de contrato' }]);
   };
-  const updatePaymentPlan = (id: string, field: keyof PaymentPlan, value: any) => {
+  const updatePaymentPlan = <K extends keyof PaymentPlan>(id: string, field: K, value: PaymentPlan[K]) => {
     setPaymentPlans(paymentPlans.map(pp => pp.id === id ? { ...pp, [field]: value } : pp));
   };
   const removePaymentPlan = (id: string) => {
@@ -354,7 +364,7 @@ export default function Cotizador() {
   const addDiscount = () => {
     setDiscounts([...discounts, { id: Date.now().toString(), description: 'Descuento especial', amount: 500 }]);
   };
-  const updateDiscount = (id: string, field: keyof ProposalDiscount, value: any) => {
+  const updateDiscount = <K extends keyof ProposalDiscount>(id: string, field: K, value: ProposalDiscount[K]) => {
     setDiscounts(discounts.map(d => d.id === id ? { ...d, [field]: value } : d));
   };
   const removeDiscount = (id: string) => {
@@ -366,69 +376,20 @@ export default function Cotizador() {
   const updateStep = (id: string, label: string) => setSteps(steps.map(s => s.id === id ? { ...s, label } : s));
   const removeStep = (id: string) => setSteps(steps.filter(s => s.id !== id));
 
-  if (authLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-50"><p>Cargando...</p></div>;
-  }
-
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="max-w-md w-full bg-white p-8 rounded-xl shadow border border-gray-100">
-          <h1 className="text-2xl font-bold text-center mb-6">Cotizador Admin</h1>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2 border rounded focus:ring-black focus:border-black"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2 border rounded focus:ring-black focus:border-black"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={authLoading}
-              className="w-full py-2 px-4 bg-black text-white font-medium rounded hover:bg-gray-800 transition disabled:opacity-50"
-            >
-              Iniciar Sesión
-            </button>
-          </form>
-          <p className="text-xs text-gray-500 text-center mt-6">
-            Solo administradores autorizados.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 font-sans">
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="font-sans">
+      <div className="max-w-5xl space-y-8">
         
         {/* CRUD Panel */}
         <div className="bg-white p-6 rounded-xl shadow border border-gray-100">
           <div className="flex justify-between items-center mb-6 border-b pb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Gestor de Cotizaciones</h1>
-              <p className="text-sm text-gray-500">Sesión iniciada como: {session.user.email}</p>
+              <p className="text-sm text-gray-500">Edición completa de propuestas. Para cotizar rápido usa la ficha del proyecto.</p>
             </div>
             <div className="flex gap-2">
               <button onClick={handleNew} className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
                 + Nueva
-              </button>
-              <button onClick={handleLogout} className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">
-                Salir
               </button>
             </div>
           </div>
@@ -600,7 +561,7 @@ export default function Cotizador() {
                 <span className="text-lg font-bold text-gray-800">Inversión Inicial Total: ${totalBudget.toLocaleString()} MXN</span>
                 <label className="flex items-center gap-2 mt-2 cursor-pointer">
                   <input type="checkbox" checked={includeIva} onChange={(e) => setIncludeIva(e.target.checked)} className="rounded border-gray-300 text-black focus:ring-black" />
-                  <span className="text-sm font-medium text-gray-700">Mostrar leyenda "+ IVA" en propuesta</span>
+                  <span className="text-sm font-medium text-gray-700">Mostrar leyenda &quot;+ IVA&quot; en propuesta</span>
                 </label>
               </div>
             </section>
